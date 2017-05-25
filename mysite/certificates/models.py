@@ -1,0 +1,40 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+from django.contrib.auth.models import User
+from datetime import date, datetime
+from django.db import models
+
+
+class Profile(models.Model):
+    user=models.OneToOneField(User)
+    name=models.CharField(max_length=75)
+    email=models.CharField(max_length=75)
+    DOB=models.DateField()
+
+
+class UserType(models.Model):
+    name=models.CharField(max_length=75)
+    user=models.ManyToManyField(User)
+
+    def __str__(self):
+        return self.name
+
+
+class Certificate(models.Model):
+    latex_template=models.CharField(max_length=100)
+    logo=models.CharField(max_length=25)
+
+
+class Programs(models.Model):
+    name=models.CharField(max_length=100)
+    certificate=models.OneToOneField(Certificate,on_delete=models.CASCADE)
+
+
+class OrganisePrograms(models.Model):
+    program=models.ForeignKey(Programs)
+    start_date=models.DateField()
+    end_date=models.DateField()
+    num_of_days=models.IntegerField()
+    user=models.ManyToManyField(User)
+    days_attended=models.IntegerField()
+    qrCode=models.IntegerField()
