@@ -7,8 +7,8 @@ from django.contrib import admin
 
 from .models import *
 
-admin.site.register(Program)
-admin.site.register(OrganiseProgram)
+admin.site.register(Event)
+admin.site.register(OrganisedEvent)
 admin.site.register(Certificate)
 admin.site.register(UserType)
 admin.site.register(UserCertificateInfo)
