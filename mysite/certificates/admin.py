@@ -11,6 +11,7 @@ admin.site.register(Program)
 admin.site.register(OrganiseProgram)
 admin.site.register(Certificate)
 admin.site.register(UserType)
+admin.site.register(UserCertificateInfo)
 
 
 

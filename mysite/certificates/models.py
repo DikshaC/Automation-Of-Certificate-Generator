@@ -41,14 +41,17 @@ class OrganiseProgram(models.Model):
     start_date=models.DateField()
     end_date=models.DateField()
     num_of_days=models.IntegerField()
-    user=models.ManyToManyField(User,through='UserCertificateInfo')
+    user=models.ManyToManyField(User,related_name='user',through='UserCertificateInfo')
 
     def __str__(self):
         return self.program.name
 
 
 class UserCertificateInfo(models.Model):
+    user=models.ForeignKey(User,default='admin')
     organise_program=models.ForeignKey(OrganiseProgram)
-    user=models.ForeignKey(User)
     days_attended = models.IntegerField()
     qrCode = models.IntegerField()
+
+    def __str__(self):
+        return self.user.first_name
