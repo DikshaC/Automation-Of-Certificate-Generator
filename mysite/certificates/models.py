@@ -24,17 +24,31 @@ class Certificate(models.Model):
     latex_template=models.CharField(max_length=100)
     logo=models.CharField(max_length=25)
 
+    def __str__(self):
+        return self.latex_template
 
-class Programs(models.Model):
+
+class Program(models.Model):
     name=models.CharField(max_length=100)
-    certificate=models.OneToOneField(Certificate,on_delete=models.CASCADE)
+    certificate=models.OneToOneField(Certificate,on_delete=models.CASCADE,primary_key=True)
+
+    def __str__(self):
+        return self.name
 
 
-class OrganisePrograms(models.Model):
-    program=models.ForeignKey(Programs)
+class OrganiseProgram(models.Model):
+    program=models.ForeignKey(Program)
     start_date=models.DateField()
     end_date=models.DateField()
     num_of_days=models.IntegerField()
-    user=models.ManyToManyField(User)
-    days_attended=models.IntegerField()
-    qrCode=models.IntegerField()
+    user=models.ManyToManyField(User,through='UserCertificateInfo')
+
+    def __str__(self):
+        return self.program.name
+
+
+class UserCertificateInfo(models.Model):
+    organise_program=models.ForeignKey(OrganiseProgram)
+    user=models.ForeignKey(User)
+    days_attended = models.IntegerField()
+    qrCode = models.IntegerField()
