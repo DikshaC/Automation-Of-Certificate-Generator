@@ -7,8 +7,6 @@ from django.db import models
 
 class Profile(models.Model):
     user = models.OneToOneField(User)
-    name = models.CharField(max_length=75)
-    email = models.CharField(max_length=75)
     DOB = models.DateField()
     college = models.CharField(max_length=300, blank=True)
 
