@@ -9,6 +9,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User)
     DOB = models.DateField()
     college = models.CharField(max_length=300, null=True)
+
     def __str__(self):
         return self.user.first_name
 
@@ -22,11 +23,11 @@ class UserType(models.Model):
 
 
 class Certificate(models.Model):
-    latex_template = models.CharField(max_length=25)
+    template = models.CharField(max_length=100)
     logo = models.CharField(max_length=25)
 
     def __str__(self):
-        return self.logo
+        return self.template
 
 
 class Event(models.Model):
@@ -38,14 +39,14 @@ class Event(models.Model):
 
 
 class OrganisedEvent(models.Model):
-    program = models.ForeignKey(Event)
+    event = models.ForeignKey(Event)
     start_date = models.DateField()
     end_date = models.DateField()
     num_of_days = models.IntegerField()
     participant = models.ManyToManyField(User, related_name='user', through='UserCertificateInfo', blank=True)
 
     def __str__(self):
-        return self.program.name
+        return self.event.name
 
 
 class UserCertificateInfo(models.Model):
