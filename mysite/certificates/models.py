@@ -8,7 +8,9 @@ from django.db import models
 class Profile(models.Model):
     user = models.OneToOneField(User)
     DOB = models.DateField()
-    college = models.CharField(max_length=300, blank=True)
+    college = models.CharField(max_length=300, null=True)
+    def __str__(self):
+        return self.user.first_name
 
 
 class UserType(models.Model):
@@ -20,11 +22,11 @@ class UserType(models.Model):
 
 
 class Certificate(models.Model):
-    latex_template = models.CharField(max_length=100)
+    latex_template = models.CharField(max_length=25)
     logo = models.CharField(max_length=25)
 
     def __str__(self):
-        return self.latex_template
+        return self.logo
 
 
 class Event(models.Model):
