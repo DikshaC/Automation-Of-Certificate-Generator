@@ -1,3 +1,9 @@
+import os
+import subprocess
+
+from django.core.files import File
+from django.core.files.storage import FileSystemStorage
+
 from datetime import datetime
 
 from .models import *
@@ -34,14 +40,14 @@ def add_certificate():
     template=input("Template name:")
     logo=input("logo:")
 
-    certificate=Certificate(latex_template=template,logo=logo)
+    certificate=Certificate(template=template,logo=logo)
     certificate.save()
 
 
 def add_event():
     name=input("name of event:")
-    certificate=input("Certificate:")
-    c=Certificate.objects.get(latex_template=certificate)
+    certificate=input("Certificate template:")
+    c=Certificate.objects.get(template=certificate)
     event=Event(name=name,certificate=c)
     event.save()
 
@@ -55,16 +61,30 @@ def add_organised_events():
 
     num_days=input("Num days:")
 
-    e=OrganisedEvent(program=e,start_date=start_date,end_date=end_date,num_of_days=num_days)
+    e=OrganisedEvent(event=e,start_date=start_date,end_date=end_date,num_of_days=num_days)
     e.save()
 
-    #print(User.objects.all())
-    print("Enter users:")
-    print("Type 'exit1 to exit'")
 
-    while(input()!="exit1"):
-        user=input("Enter user:")
-        e.participant.add(user)
-        e.save()
+def take_template():
+
+    path="/home/diksha/PycharmProjects/new_djangoTest/mysite/certificates"
+    file=os.path.join(path,"exam.tex")
+    tex_file=open(file,"r")
+
+    #pdf, info = texcaller.convert(latex, 'LaTeX', 'PDF', 5)
+
+    cmd = ['pdflatex', '-interaction', 'nonstopmode',file]
+    proc = subprocess.Popen(cmd)
+    proc.communicate()
+
+    u = Certificate(logo="abc")
+    path="/home/diksha/PycharmProjects/new_djangoTest/mysite/media/diksha"
+    file=os.path.join(path,"exam.pdf")
+    file1=File(open(file,"r"))
+    u.template=file1
+    u.save()
+
+
+
 
 
