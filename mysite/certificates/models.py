@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db import models
+from django.core.files.storage import FileSystemStorage
+
 
 
 class Profile(models.Model):
@@ -23,7 +25,8 @@ class UserType(models.Model):
 
 
 class Certificate(models.Model):
-    template = models.CharField(max_length=100, null=True)
+    abc = FileSystemStorage()
+    template = models.FileField(upload_to='a',blank=True,null=True)
     logo = models.CharField(max_length=25)
 
     def __str__(self):

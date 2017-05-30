@@ -1,3 +1,9 @@
+import os
+import subprocess
+
+from django.core.files import File
+from django.core.files.storage import FileSystemStorage
+
 from datetime import datetime
 
 from .models import *
@@ -82,3 +88,21 @@ def find_user():
     for username in u1:
         print(username.user.first_name)
 
+def take_template():
+
+    path="/home/diksha/PycharmProjects/new_djangoTest/mysite/certificates"
+    file=os.path.join(path,"exam.tex")
+    tex_file=open(file,"r")
+
+    #pdf, info = texcaller.convert(latex, 'LaTeX', 'PDF', 5)
+
+    cmd = ['pdflatex', '-interaction', 'nonstopmode',file]
+    proc = subprocess.Popen(cmd)
+    proc.communicate()
+
+    u = Certificate(logo="abc")
+    path="/home/diksha/PycharmProjects/new_djangoTest/mysite/media/diksha"
+    file=os.path.join(path,"exam.pdf")
+    file1=File(open(file,"r"))
+    u.template=file1
+    u.save()
