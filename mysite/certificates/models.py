@@ -23,11 +23,11 @@ class UserType(models.Model):
 
 
 class Certificate(models.Model):
-    template = models.CharField(max_length=100)
+    template = models.CharField(max_length=100, null=True)
     logo = models.CharField(max_length=25)
 
     def __str__(self):
-        return self.template
+        return self.logo
 
 
 class Event(models.Model):
