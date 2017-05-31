@@ -36,7 +36,6 @@ class Certificate(models.Model):
 class Event(models.Model):
     name = models.CharField(max_length=100)
     certificate = models.OneToOneField(Certificate, on_delete=models.CASCADE, primary_key=True)
-
     def __str__(self):
         return self.name
 

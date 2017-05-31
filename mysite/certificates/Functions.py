@@ -1,15 +1,11 @@
 import os
 import subprocess
-
+import smtplib
 from django.core.files import File
-from django.core.files.storage import FileSystemStorage
-
-from datetime import datetime
-
 from .models import *
 from django.contrib.auth.models import User
-from django.db import models
-
+from flask import Flask, render_template, redirect, url_for
+from flask_mail import Mail, Message
 
 def a():
     print("hi")
@@ -80,13 +76,17 @@ def add_user_certificate_info():
 
 
 def find_user():
-    u1 = []
+    users=[]
     event2 = input("Enter Organise_Event:")
     e1 = Event.objects.get(name=event2)
     oe1 = OrganisedEvent.objects.get(event=e1)
     u1 = UserCertificateInfo.objects.filter(organise_event=oe1)
     for username in u1:
         print(username.user.first_name)
+        users.append(username.user.first_name)
+
+    return users
+
 
 def take_template():
 
@@ -106,3 +106,33 @@ def take_template():
     file1=File(open(file,"r"))
     u.template=file1
     u.save()
+
+
+def send_certificates():
+    users=[]
+    users=find_user()
+    for user in users:
+        print("certificate sent to "+user)
+
+
+def send_email():
+
+
+    app = Flask(__name__)
+    app.config.update(
+        MAIL_SERVER='smtp.gmail.com',
+        MAIL_PORT=587,
+        MAIL_USE_SSL=True,
+        MAIL_USERNAME='dchhabra1995@gmail.com',
+        MAIL_PASSWORD='gchhabra1995'
+    )
+
+    mail = Mail(app)
+
+    #@app.route('/send-mail/')
+
+    msg = mail.send_message(
+        'Send Mail tutorial!',
+        sender='dchhabra1995@gmail.com',
+        recipients=['dchhabra1995@gmail.com'],
+        body="Congratulations you've succeeded!")
