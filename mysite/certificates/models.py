@@ -46,7 +46,7 @@ class OrganisedEvent(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     num_of_days = models.IntegerField()
-    participants = models.ManyToManyField(User, null=True)
+    participants = models.ManyToManyField(User)
     organiser = models.CharField(max_length=100)
     place = models.CharField(max_length=100)
 

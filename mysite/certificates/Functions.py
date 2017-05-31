@@ -12,10 +12,10 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-def add_user(username, password, first_name, last_name, email, user_type, DOB, college):
+def add_user(username, password, first_name, last_name, email, user_type, dob, college):
     user1 = User(username=username, password=password, first_name=first_name, last_name=last_name, email=email)
     user1.save()
-    profile = Profile(user=user1, DOB=DOB, college=college)
+    profile = Profile(user=user1, DOB=dob, college=college)
     type_user = UserType.objects.get(name=user_type)
     type_user.save()
     type_user.user.add(user1)
@@ -30,11 +30,12 @@ def add_certificate(template, logo):
 
 def add_event(name, certificate, creator):
     c = Certificate.objects.get(template=certificate)
-    event = Event(name=name,certificate=c,creator=creator)
+    event = Event(name=name,certificate=c, creator=creator)
     event.save()
 
 
-def add_organised_event(event, start_date, end_date, num_days, organiser, place, participants):
+def add_organised_event(event, start_date, end_date, num_days, organiser, place,
+                        participants):
     e = Event.objects.get(name=event)
     e = OrganisedEvent(event=e, start_date=start_date, end_date=end_date, num_of_days=num_days, organiser=organiser, place=place, participants=participants)
     e.save()
