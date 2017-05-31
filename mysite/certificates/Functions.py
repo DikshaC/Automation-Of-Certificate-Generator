@@ -56,10 +56,9 @@ def add_organised_event():
     e = Event.objects.get(name=event)
     start_date = input("start date:")
     end_date = input("end date:")
-
+    organiser=input("Organiser:")
     num_days = input("Num days:")
-
-    e = OrganisedEvent(event=e, start_date=start_date, end_date=end_date, num_of_days=num_days)
+    e = OrganisedEvent(event=e, start_date=start_date, end_date=end_date, num_of_days=num_days,organiser=organiser)
     e.save()
 
 
@@ -88,6 +87,15 @@ def find_user():
     return users
 
 
+def send_certificates():
+    users=[]
+    event2 = input("Enter Organise_Event:")
+    e1 = Event.objects.get(name=event2)
+    oe = OrganisedEvent.objects.get(event=e1)
+    users=oe.participants
+    for user in users:
+        print("certificate sent to "+user)
+
 def take_template():
 
     path="/home/diksha/PycharmProjects/new_djangoTest/mysite/certificates"
@@ -108,11 +116,7 @@ def take_template():
     u.save()
 
 
-def send_certificates():
-    users=[]
-    users=find_user()
-    for user in users:
-        print("certificate sent to "+user)
+
 
 
 def send_email():
