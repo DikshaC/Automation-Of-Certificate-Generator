@@ -34,8 +34,7 @@ def add_event(name, certificate, creator):
     event.save()
 
 
-def add_organised_event(event, start_date, end_date, num_days, organiser, place,
-                        participants):
+def add_organised_event(event, start_date, end_date, num_days, organiser, place,participants):
     e = Event.objects.get(name=event)
     e = OrganisedEvent(event=e, start_date=start_date, end_date=end_date, num_of_days=num_days, organiser=organiser, place=place, participants=participants)
     e.save()
