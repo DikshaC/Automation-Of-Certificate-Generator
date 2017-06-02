@@ -1,3 +1,4 @@
+import csv
 import os
 import subprocess
 import smtplib
@@ -21,47 +22,52 @@ def add_user(username, password, first_name, last_name, email, user_type, dob, c
     type_user.user.add(user1)
     profile.save()
     type_user.save()
+    return user1
 
 
-def add_certificate(template, logo):
-    certificate = Certificate(template=template, logo=logo)
-    certificate.save()
+def add_certificate(template):
+    c = Certificate(template=template)
+    c.save()
+    return c
 
 
-def add_event(name, certificate, creator):
+def create_event(name, certificate, creator):
     c = Certificate.objects.get(template=certificate)
-    event = Event(name=name,certificate=c, creator=creator)
-    event.save()
-
-
-def add_organised_event(event, start_date, end_date, num_days, organiser, place,participants):
-    e = Event.objects.get(name=event)
-    e = OrganisedEvent(event=e, start_date=start_date, end_date=end_date, num_of_days=num_days, organiser=organiser, place=place, participants=participants)
+    e = Event(name=name,certificate=c, creator=creator)
     e.save()
+    return e
 
 
-def add_user_certificate_info(user, days_attended, qr_code, event1):
+def organise_event(event, start_date, end_date, num_days, organiser, place, participants):
+    e = Event.objects.get(name=event)
+    oe = OrganisedEvent(event=e, start_date=start_date, end_date=end_date, num_of_days=num_days, organiser=organiser, place=place)
+    oe.save()
+    for participant in participants:
+        u = User.objects.get(username=participant)
+        oe.participants.add(u)
+        oe.save()
+    return oe
+
+
+def add_participant(event, participants):
+    e = Event.objects.get(name=event)
+    oe = OrganisedEvent.objects.get(event=e)
+    for participant in participants:
+        u = User.objects.get(username=participant)
+        oe.participants.add(u)
+        oe.save()
+
+
+def add_user_certificate_info(user, days_attended, qr_code, event):
     us = User.objects.get(first_name=user)
-    e = Event.objects.get(name=event1)
+    e = Event.objects.get(name=event)
     oe = OrganisedEvent.objects.get(event=e)
     u = UserCertificateInfo(user=us, organise_event=oe, qrcode=qr_code, days_attended=days_attended)
     u.save()
+    return u
 
 
-def find_user(event2):
-    users = []
-    e1 = Event.objects.get(name=event2)
-    oe1 = OrganisedEvent.objects.get(event=e1)
-    u1 = UserCertificateInfo.objects.filter(organise_event=oe1)
-    for username in u1:
-        print(username.user.first_name)
-        users.append(username.user.first_name)
-
-    return users
-
-
-def take_template():
-
+def template_to_pdf():
     path = "C:/Users/aditi/PycharmProjects/new_djangoTest/mysite/certificates"
     file = os.path.join(path,"exam.tex")
     tex_file = open(file,"r")
@@ -80,16 +86,18 @@ def take_template():
     u.save()
 
 
-def send_certificate():
+def send_certificate(event):
     users = []
-    users = find_user()
+    e = Event.objects.get(name=event)
+    oe = OrganisedEvent.objects.get(event=e)
+    users = oe.participants.all()
     for user in users:
-        print("Certificate sent to "+user)
+        print("Certificate sent to "+user.username)
 
 
 def send_email():
     fromaddr = "soniaditi1397@gmail.com"
-    toaddrs = "soniaditi1397@gmail.com"
+    toaddr = "soniaditi1397@gmail.com"
 
     msg = "hi! msg "
     #attach = ("csvonDesktp.csv")
@@ -100,5 +108,20 @@ def send_email():
     server = smtplib.SMTP('smtp.gmail.com',587,"soniaditi1397@gmail.com")
     server.starttls()
     server.login(username, password)
-    server.sendmail(fromaddr, toaddrs, msg)
+    server.sendmail(fromaddr, toaddr, msg)
     server.quit()
+
+
+def read_csv(name):
+    reader = csv.reader(open(name), delimiter=",")
+    data = list(reader)[1:]
+
+    for line in data:
+        first_name=line[0]
+        last_name=line[1]
+        username=line[2]
+        password=line[3]
+        email=line[4]
+        user=User(first_name=first_name,last_name=last_name,username=username,password=password,email=email)
+        user.save()
+        print(user.first_name)
