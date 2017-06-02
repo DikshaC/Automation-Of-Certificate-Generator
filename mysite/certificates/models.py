@@ -17,7 +17,7 @@ class Profile(models.Model):
 
 class UserType(models.Model):
     name = models.CharField(max_length=75)
-    user = models.ManyToManyField(User, null=True)
+    user = models.ManyToManyField(User, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -46,7 +46,7 @@ class OrganisedEvent(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     num_of_days = models.IntegerField()
-    participants = models.ManyToManyField(User)
+    participants = models.ManyToManyField(User, blank=True)
     organiser = models.CharField(max_length=100)
     place = models.CharField(max_length=100)
 
