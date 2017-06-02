@@ -1,15 +1,10 @@
+import csv
 import os
 import subprocess
 import smtplib
-
 from django.core.files import File
-from django.core.files.storage import FileSystemStorage
-
-from datetime import datetime
-
 from .models import *
 from django.contrib.auth.models import User
-from django.db import models
 
 
 def add_user(username, password, first_name, last_name, email, user_type, dob, college):
@@ -110,3 +105,30 @@ def send_email():
     server.sendmail(fromaddr, toaddr, msg)
     server.quit()
 
+
+def read_csv(name):
+    reader = csv.reader(open(name), delimiter=",")
+    csv_file = list(reader)[1:]
+
+    for line in csv_file:
+        first_name = line[0]
+        last_name = line[1]
+        username = line[2]
+        password = line[3]
+        email = line[4]
+        type = line[5]
+        dob = line[6]
+        college = line[7]
+
+        user = User(first_name=first_name, last_name=last_name, username=username, password=password, email=email)
+        user.save()
+
+        profile = Profile(user=user, DOB=dob, college=college)
+        profile.save()
+
+        type_user = UserType.objects.get(name=type)
+        type_user.save()
+        type_user.user.add(user)
+        type_user.save()
+
+        print(user.first_name)
