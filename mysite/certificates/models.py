@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.contrib.auth.models import User
-from django.utils import timezone
 from django.db import models
 from django.core.files.storage import FileSystemStorage
 
@@ -27,14 +26,11 @@ class Certificate(models.Model):
     abc = FileSystemStorage()
     template = models.FileField(upload_to='media', storage=abc, null=True)
 
-    def __str__(self):
-        event = Event.objects.get(certificate=self)
-        return event.name
 
 
 class Event(models.Model):
     name = models.CharField(max_length=100)
-    certificate = models.OneToOneField(Certificate, on_delete=models.CASCADE, primary_key=True)
+    certificate = models.OneToOneField(Certificate, on_delete=models.CASCADE, primary_key=True,blank=True)
     creator = models.CharField(max_length=100)
 
     def __str__(self):
@@ -58,7 +54,8 @@ class UserCertificateInfo(models.Model):
     user = models.ForeignKey(User)
     organise_event = models.ForeignKey(OrganisedEvent)
     days_attended = models.IntegerField()
-    qrcode = models.IntegerField()
+    qrcode = models.CharField(max_length=10,default=0)
+
 
     def __str__(self):
         return self.user.first_name

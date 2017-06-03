@@ -1,4 +1,5 @@
 import csv
+import hashlib
 import os
 import subprocess
 import smtplib
@@ -53,12 +54,10 @@ def add_participant(event, participants):
 
 
 def add_user_certificate_info(user, days_attended, qr_code, event):
-    us = User.objects.get(first_name=user)
-    e = Event.objects.get(name=event)
-    oe = OrganisedEvent.objects.get(event=e)
-    u = UserCertificateInfo(user=us, organise_event=oe, qrcode=qr_code, days_attended=days_attended)
+    u = UserCertificateInfo(user=user, organise_event=event, qrcode=qr_code, days_attended=days_attended)
     u.save()
-    return u
+    print(u.user.first_name)
+    print(qr_code)
 
 
 def template_to_pdf():
@@ -132,3 +131,37 @@ def read_csv(name):
         type_user.save()
 
         print(user.first_name)
+
+
+def generate_qrcode(username,organised_event_name):
+    user=User.objects.get(username=username)
+    user_id = int(user.id)
+    hexa1 = hex(user_id).replace('0x', '').zfill(6).upper()
+    print(hexa1)
+
+    event=Event.objects.get(name=organised_event_name)
+    organised_event=OrganisedEvent.objects.get(event=event)
+    organised_event_id=int(organised_event.id)
+    hexa2=hex(organised_event_id).replace('0x','').zfill(6).upper()
+    print(hexa2)
+
+    serial_no = '{0}{1}'.format(hexa1,hexa2)
+    serial_key = (hashlib.sha1(str(serial_no).encode('utf-8'))).hexdigest()
+    print(serial_key)
+
+    uniqueness = False
+    num = 5
+    while not uniqueness:
+        present = UserCertificateInfo.objects.filter(qrcode__startswith=serial_key[0:num])
+        if not present:
+            qrcode = serial_key[0:num]
+            uniqueness = True
+        else:
+            if present[0].user!=user:
+                num += 1
+            else:  # when a user generates his certificate more than 1 time
+                qrcode = serial_key[0:num]
+                uniqueness=True
+    add_user_certificate_info(user,2,qrcode,organised_event)
+
+
