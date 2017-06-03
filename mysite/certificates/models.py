@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.contrib.auth.models import User
-from django.utils import timezone
 from django.db import models
 from django.core.files.storage import FileSystemStorage
 
@@ -58,7 +57,8 @@ class UserCertificateInfo(models.Model):
     user = models.ForeignKey(User)
     organise_event = models.ForeignKey(OrganisedEvent)
     days_attended = models.IntegerField()
-    qrcode = models.IntegerField()
+    qrcode = models.CharField(max_length=10,default=0)
+
 
     def __str__(self):
         return self.user.first_name
