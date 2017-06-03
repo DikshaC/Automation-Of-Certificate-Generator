@@ -25,11 +25,11 @@ class UserType(models.Model):
 
 class Certificate(models.Model):
     abc = FileSystemStorage()
-    template = models.FileField(upload_to='media', storage=abc, null=True)
+    template = models.FileField(upload_to='certificates', storage=abc, null=True)
+    title = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        event = Event.objects.get(certificate=self)
-        return event.name
+        return self.title
 
 
 class Event(models.Model):

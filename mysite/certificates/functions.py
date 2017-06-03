@@ -5,6 +5,7 @@ import smtplib
 from django.core.files import File
 from .models import *
 from django.contrib.auth.models import User
+import zipfile
 
 
 def add_user(username, password, first_name, last_name, email, user_type, dob, college):
@@ -61,20 +62,28 @@ def add_user_certificate_info(user, days_attended, qr_code, event):
     return u
 
 
-def template_to_pdf():
+def zip_to_pdf(filename):
     path = "C:/Users/aditi/PycharmProjects/new_djangoTest/mysite/certificates"
-    file = os.path.join(path,"exam.tex")
-    tex_file = open(file,"r")
+    file = os.path.join(path,filename)
 
+    with zipfile.ZipFile(file, "r") as zip_ref:
+        zip_ref.extractall("C:/Users/aditi/PycharmProjects/new_djangoTest/mysite/certificates")
     #pdf, info = texcaller.convert(latex, 'LaTeX', 'PDF', 5)
 
-    cmd = ['pdflatex', '-interaction', 'nonstopmode',file]
+    folder = filename.split('.')
+    folder = folder[0]
+
+    path = "C:/Users/aditi/PycharmProjects/new_djangoTest/mysite/certificates/"+folder
+    file = os.path.join(path,folder+".tex")
+
+    cmd = ['pdflatex', '-interaction', 'nonstopmode', file]
     proc = subprocess.Popen(cmd)
     proc.communicate()
 
-    u = Certificate(logo="abc")
-    path = "C:/Users/aditi/PycharmProjects/new_djangoTest/mysite/media/aditi"
-    file = os.path.join(path,"exam.pdf")
+    path = "C:/Users/aditi/PycharmProjects/new_djangoTest/mysite"
+    file = os.path.join(path,folder+".pdf")
+
+    u = Certificate(title="abc")
     file1 = File(open(file,"r"))
     u.template = file1
     u.save()
@@ -116,19 +125,7 @@ def read_csv(name):
         username = line[2]
         password = line[3]
         email = line[4]
-        type = line[5]
+        user_type = line[5]
         dob = line[6]
         college = line[7]
-
-        user = User(first_name=first_name, last_name=last_name, username=username, password=password, email=email)
-        user.save()
-
-        profile = Profile(user=user, DOB=dob, college=college)
-        profile.save()
-
-        type_user = UserType.objects.get(name=type)
-        type_user.save()
-        type_user.user.add(user)
-        type_user.save()
-
-        print(user.first_name)
+        add_user(username, password, first_name, last_name, email, user_type, dob, college)
