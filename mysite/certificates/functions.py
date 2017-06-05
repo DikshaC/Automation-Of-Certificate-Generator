@@ -3,6 +3,9 @@ import hashlib
 import os
 import subprocess
 import smtplib
+
+from datetime import datetime
+
 from .models import *
 from django.contrib.auth.models import User
 import zipfile
@@ -29,14 +32,19 @@ def add_certificate(template):
 
 def create_event(name, certificate, creator):
     certificate = Certificate.objects.get(template=certificate)
-    event = Event(name=name,certificate=certificate, creator=creator)
+    user = User.objects.get(username=creator)
+    event = Event(name=name,certificate=certificate, creator=user)
     event.save()
     return event
 
 
-def organise_event(event, start_date, end_date, num_days, organiser, place, participants):
+def organise_event(event, start_date, end_date, organiser, place, participants):
+    start_date1 = datetime.strptime(start_date,"%Y-%m-%d")
+    end_date1 = datetime.strptime(end_date, "%Y-%m-%d")
+    num_days = (end_date1-start_date1).days
     event = Event.objects.get(name=event)
-    organised_event = OrganisedEvent(event=event, start_date=start_date, end_date=end_date, num_of_days=num_days, organiser=organiser, place=place)
+    user = User.objects.get(username=organiser)
+    organised_event = OrganisedEvent(event=event, start_date=start_date, end_date=end_date, num_of_days=num_days, organiser=user, place=place)
     organised_event.save()
     for participant in participants:
         user = User.objects.get(username=participant)

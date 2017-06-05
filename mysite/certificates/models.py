@@ -34,7 +34,7 @@ class Certificate(models.Model):
 class Event(models.Model):
     name = models.CharField(max_length=100)
     certificate = models.OneToOneField(Certificate, on_delete=models.CASCADE, primary_key=True)
-    creator = models.CharField(max_length=100)
+    creator = models.ForeignKey(User, related_name="creator")
 
     def __str__(self):
         return self.name
@@ -45,8 +45,8 @@ class OrganisedEvent(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     num_of_days = models.IntegerField()
-    participants = models.ManyToManyField(User, blank=True)
-    organiser = models.CharField(max_length=100)
+    participants = models.ManyToManyField(User, blank=True, related_name="participants")
+    organiser = models.ForeignKey(User, related_name="organiser")
     place = models.CharField(max_length=100)
 
     def __str__(self):
@@ -56,7 +56,7 @@ class OrganisedEvent(models.Model):
 class UserCertificateInfo(models.Model):
     user = models.ForeignKey(User)
     organise_event = models.ForeignKey(OrganisedEvent)
-    duration = models.IntegerField(blank=True)
+    duration = models.IntegerField(blank=True, default=0)
     qrcode = models.CharField(max_length=10,default=0)
 
     def __str__(self):
