@@ -24,7 +24,7 @@ class UserType(models.Model):
 
 class Certificate(models.Model):
     abc = FileSystemStorage()
-    template = models.FileField(upload_to='certificates', storage=abc, null=True)
+    template = models.FileField( storage=abc, null=True)
     title = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
@@ -56,9 +56,8 @@ class OrganisedEvent(models.Model):
 class UserCertificateInfo(models.Model):
     user = models.ForeignKey(User)
     organise_event = models.ForeignKey(OrganisedEvent)
-    days_attended = models.IntegerField()
+    duration = models.IntegerField(blank=True)
     qrcode = models.CharField(max_length=10,default=0)
-
 
     def __str__(self):
         return self.user.first_name

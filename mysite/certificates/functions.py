@@ -3,96 +3,95 @@ import hashlib
 import os
 import subprocess
 import smtplib
-from django.core.files import File
 from .models import *
 from django.contrib.auth.models import User
 import zipfile
+from django.conf import settings
 
 
 def add_user(username, password, first_name, last_name, email, user_type, dob, college):
-    user1 = User(username=username, password=password, first_name=first_name, last_name=last_name, email=email)
-    user1.save()
-    profile = Profile(user=user1, DOB=dob, college=college)
+    user = User(username=username, password=password, first_name=first_name, last_name=last_name, email=email)
+    user.save()
+    profile = Profile(user=user, DOB=dob, college=college)
     type_user = UserType.objects.get(name=user_type)
     type_user.save()
-    type_user.user.add(user1)
+    type_user.user.add(user)
     profile.save()
     type_user.save()
-    return user1
+    return user
 
 
 def add_certificate(template):
-    c = Certificate(template=template)
-    c.save()
-    return c
+    certificate = Certificate(template=template)
+    certificate.save()
+    return certificate
 
 
 def create_event(name, certificate, creator):
-    c = Certificate.objects.get(template=certificate)
-    e = Event(name=name,certificate=c, creator=creator)
-    e.save()
-    return e
+    certificate = Certificate.objects.get(template=certificate)
+    event = Event(name=name,certificate=certificate, creator=creator)
+    event.save()
+    return event
 
 
 def organise_event(event, start_date, end_date, num_days, organiser, place, participants):
-    e = Event.objects.get(name=event)
-    oe = OrganisedEvent(event=e, start_date=start_date, end_date=end_date, num_of_days=num_days, organiser=organiser, place=place)
-    oe.save()
+    event = Event.objects.get(name=event)
+    organised_event = OrganisedEvent(event=event, start_date=start_date, end_date=end_date, num_of_days=num_days, organiser=organiser, place=place)
+    organised_event.save()
     for participant in participants:
-        u = User.objects.get(username=participant)
-        oe.participants.add(u)
-        oe.save()
-    return oe
+        user = User.objects.get(username=participant)
+        organised_event.participants.add(user)
+        organised_event.save()
+    return organised_event
 
 
 def add_participant(event, participants):
-    e = Event.objects.get(name=event)
-    oe = OrganisedEvent.objects.get(event=e)
+    event = Event.objects.get(name=event)
+    organised_event = OrganisedEvent.objects.get(event=event)
     for participant in participants:
         u = User.objects.get(username=participant)
-        oe.participants.add(u)
-        oe.save()
+        organised_event.participants.add(u)
+        organised_event.save()
 
 
 def add_user_certificate_info(user, days_attended, qr_code, event):
-    u = UserCertificateInfo(user=user, organise_event=event, qrcode=qr_code, days_attended=days_attended)
-    u.save()
-    print(u.user.first_name)
+    user_info = UserCertificateInfo(user=user, organise_event=event, qrcode=qr_code, days_attended=days_attended)
+    user_info.save()
+    print(user_info.user.first_name)
     print(qr_code)
 
 
 def zip_to_pdf(filename):
-    path = "C:/Users/aditi/PycharmProjects/new_djangoTest/mysite/certificates"
+    path = settings.MEDIA_ROOT
     file = os.path.join(path,filename)
 
     with zipfile.ZipFile(file, "r") as zip_ref:
-        zip_ref.extractall("C:/Users/aditi/PycharmProjects/new_djangoTest/mysite/certificates")
-    #pdf, info = texcaller.convert(latex, 'LaTeX', 'PDF', 5)
+        zip_ref.extractall(settings.MEDIA_ROOT)
 
     folder = filename.split('.')
     folder = folder[0]
 
-    path = "C:/Users/aditi/PycharmProjects/new_djangoTest/mysite/certificates/"+folder
-    file = os.path.join(path,folder+".tex")
+    path_folder = path+folder
+    file = os.path.join(path_folder,folder+".tex")
+
+    os.chdir(path_folder)
 
     cmd = ['pdflatex', '-interaction', 'nonstopmode', file]
     proc = subprocess.Popen(cmd)
     proc.communicate()
 
-    path = "C:/Users/aditi/PycharmProjects/new_djangoTest/mysite"
-    file = os.path.join(path,folder+".pdf")
+    file = os.path.join(path_folder,folder+".pdf")
 
-    u = Certificate(title="abc")
-    file1 = File(open(file,"r"))
-    u.template = file1
-    u.save()
+    certificate = Certificate(title="abc")
+    certificate.template = file
+    certificate.save()
 
 
 def send_certificate(event):
     users = []
-    e = Event.objects.get(name=event)
-    oe = OrganisedEvent.objects.get(event=e)
-    users = oe.participants.all()
+    event = Event.objects.get(name=event)
+    organised_event = OrganisedEvent.objects.get(event=event)
+    users = organised_event.participants.all()
     for user in users:
         print("Certificate sent to "+user.username)
 
@@ -143,7 +142,7 @@ def generate_qrcode(username,organised_event_name):
     print(hexa2)
 
     serial_no = '{0}{1}'.format(hexa1,hexa2)
-    serial_key = (hashlib.sha1(str(serial_no).encode('utf-8'))).hexdigest()
+    serial_key = (hashlib.sha256(str(serial_no).encode('utf-8'))).hexdigest()
     print(serial_key)
 
     uniqueness = False
@@ -162,3 +161,14 @@ def generate_qrcode(username,organised_event_name):
     add_user_certificate_info(user,2,qrcode,organised_event)
 
 
+def check_latex(filename):
+    path = settings.MEDIA_ROOT
+    file = os.path.join(path, filename)
+    os.chdir(path)
+
+    file=open(file,"w")
+    content=file.read()
+
+    cmd = ['pdflatex', '-interaction', 'nonstopmode', file]
+    proc = subprocess.Popen(cmd)
+    proc.communicate()
