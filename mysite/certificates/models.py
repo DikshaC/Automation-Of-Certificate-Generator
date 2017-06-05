@@ -16,7 +16,7 @@ class Profile(models.Model):
 
 class UserType(models.Model):
     name = models.CharField(max_length=75)
-    user = models.ManyToManyField(User, null=True)
+    user = models.ManyToManyField(User, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -24,13 +24,16 @@ class UserType(models.Model):
 
 class Certificate(models.Model):
     abc = FileSystemStorage()
-    template = models.FileField(upload_to='media', storage=abc, null=True)
+    template = models.FileField(upload_to='certificates', storage=abc, null=True)
+    title = models.CharField(max_length=100, blank=True)
 
+    def __str__(self):
+        return self.title
 
 
 class Event(models.Model):
     name = models.CharField(max_length=100)
-    certificate = models.OneToOneField(Certificate, on_delete=models.CASCADE, primary_key=True,blank=True)
+    certificate = models.OneToOneField(Certificate, on_delete=models.CASCADE, primary_key=True)
     creator = models.CharField(max_length=100)
 
     def __str__(self):
@@ -42,7 +45,7 @@ class OrganisedEvent(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     num_of_days = models.IntegerField()
-    participants = models.ManyToManyField(User)
+    participants = models.ManyToManyField(User, blank=True)
     organiser = models.CharField(max_length=100)
     place = models.CharField(max_length=100)
 
