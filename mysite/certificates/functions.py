@@ -71,7 +71,7 @@ def add_user_certificate_info(user, days_attended, qr_code, event):
 
 def zip_to_pdf(filename):
     path = settings.MEDIA_ROOT
-    file = os.path.join(path,filename)
+    file = os.path.join(path, filename)
 
     with zipfile.ZipFile(file, "r") as zip_ref:
         zip_ref.extractall(settings.MEDIA_ROOT)
@@ -105,24 +105,24 @@ def send_certificate(event):
 
 
 def send_email():
-    fromaddr = "soniaditi1397@gmail.com"
-    toaddr = "soniaditi1397@gmail.com"
+    fromaddr = "abcd@gmail.com"
+    toaddr = "abcd@gmail.com"
 
     msg = "hi! msg "
     #attach = ("csvonDesktp.csv")
 
-    username = "soniaditi1397@gmail.com"
+    username = "abcd@gmail.com"
     password = "abcd"
 
-    server = smtplib.SMTP('smtp.gmail.com',587,"soniaditi1397@gmail.com")
+    server = smtplib.SMTP('smtp.gmail.com', 587, "abcd@gmail.com")
     server.starttls()
     server.login(username, password)
     server.sendmail(fromaddr, toaddr, msg)
     server.quit()
 
 
-def read_csv(name):
-    reader = csv.reader(open(name), delimiter=",")
+def read_csv(filename):
+    reader = csv.reader(open(filename), delimiter=",")
     csv_file = list(reader)[1:]
 
     for line in csv_file:
