@@ -33,7 +33,7 @@ def add_certificate(template):
 def create_event(name, certificate, creator):
     certificate = Certificate.objects.get(template=certificate)
     user = User.objects.get(username=creator)
-    event = Event(name=name,certificate=certificate, creator=user)
+    event = Event(name=name, certificate=certificate, creator=user)
     event.save()
     return event
 

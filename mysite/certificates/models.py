@@ -16,7 +16,7 @@ class Profile(models.Model):
 
 class UserType(models.Model):
     name = models.CharField(max_length=75)
-    user = models.ManyToManyField(User, null=True, blank=True)
+    user = models.ManyToManyField(User, blank=True)
 
     def __str__(self):
         return self.name
@@ -24,7 +24,7 @@ class UserType(models.Model):
 
 class Certificate(models.Model):
     abc = FileSystemStorage()
-    template = models.FileField( storage=abc, null=True)
+    template = models.FileField(storage=abc, null=True)
     title = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
