@@ -55,9 +55,10 @@ class OrganisedEvent(models.Model):
 
 class UserCertificateInfo(models.Model):
     user = models.ForeignKey(User)
-    organise_event = models.ForeignKey(OrganisedEvent)
+    organised_event = models.ForeignKey(OrganisedEvent)
     duration = models.IntegerField(blank=True, default=0)
     qrcode = models.CharField(max_length=10,default=0)
+    user_type=models.ManyToManyField(UserType,related_name="user_type")
 
     def __str__(self):
         return self.user.first_name

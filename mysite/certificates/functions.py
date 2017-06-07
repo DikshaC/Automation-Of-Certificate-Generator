@@ -3,9 +3,7 @@ import hashlib
 import os
 import subprocess
 import smtplib
-
 from datetime import datetime
-
 from .models import *
 from django.contrib.auth.models import User
 import zipfile
@@ -13,6 +11,19 @@ from django.conf import settings
 
 
 def add_user(username, password, first_name, last_name, email, user_type, dob, college):
+    """
+    Adds a new participant/organiser/etc to the database
+
+    :param username: The one to be used for creating the django account
+    :param password: Min 8 letter/digits
+    :param first_name: User's first name
+    :param last_name:  User's last name
+    :param email: The current email-id used for sending certificates
+    :param user_type: Recognizes the role of the user in the event
+    :param dob: Date Of birth
+    :param college: College of the user (If exists)
+
+    """
     user = User(username=username, password=password, first_name=first_name, last_name=last_name, email=email)
     user.save()
     profile = Profile(user=user, DOB=dob, college=college)
@@ -25,12 +36,26 @@ def add_user(username, password, first_name, last_name, email, user_type, dob, c
 
 
 def add_certificate(template):
+    """
+    Adds a new zip folder containing certificate template and it's details.
+
+    :param template: It is the zipped folder to be stored .
+    :return: Returns the certificate object.
+    """
     certificate = Certificate(template=template)
     certificate.save()
     return certificate
 
 
 def create_event(name, certificate, creator):
+    """
+    Creates a new event which can be used again for organising an event.
+
+    :param name: The name of the event.
+    :param certificate: The certificate class's object.
+    :param creator: The user who created this event.
+    :return: Return the event object.
+    """
     certificate = Certificate.objects.get(template=certificate)
     user = User.objects.get(username=creator)
     event = Event(name=name, certificate=certificate, creator=user)
@@ -39,6 +64,17 @@ def create_event(name, certificate, creator):
 
 
 def organise_event(event, start_date, end_date, organiser, place, participants):
+    """
+    Adds an event from the event class to be organised.
+
+    :param event: The event class object which is to be organised.
+    :param start_date: The starting date of the organised event (Format: Year-month-day, for eg. XXXX-XX-XX )
+    :param end_date: The ending date of the organised event (Format: Year-month-day, for eg. XXXX-XX-XX )
+    :param organiser: The organiser's name.
+    :param place: The place where the event is being organised.
+    :param participants: The participating users in the event.
+    :return: Returns the object of the organised_event class
+    """
     start_date1 = datetime.strptime(start_date,"%Y-%m-%d")
     end_date1 = datetime.strptime(end_date, "%Y-%m-%d")
     num_days = (end_date1-start_date1).days
@@ -54,6 +90,13 @@ def organise_event(event, start_date, end_date, organiser, place, participants):
 
 
 def add_participant(event, participants):
+    """
+    Adds participants/users to the events organised.
+
+    :param event: The organised event name in which participants are to be added
+    :param participants: The list of participants to be added to an event organised.
+    :return: Returns the participants's list which are successfull added to the database
+    """
     event = Event.objects.get(name=event)
     organised_event = OrganisedEvent.objects.get(event=event)
     for participant in participants:
@@ -61,15 +104,32 @@ def add_participant(event, participants):
         organised_event.participants.add(u)
         organised_event.save()
 
+    return participants
 
-def add_user_certificate_info(user, days_attended, qr_code, event):
+
+def add_user_certificate_info(user, days_attended, qr_code, event,user_type):
+    """
+    Adds informations about the certificate of a user in a particular event
+    :param user: User class object.
+    :param days_attended: Number of days the user attended the event (If exists)
+    :param qr_code: The qrcode of the certificate of the user of the event
+    :param event: The event object.
+    :param user_type: The list of roles played by the user in that event.
+    :return:
+    """
     user_info = UserCertificateInfo(user=user, organise_event=event, qrcode=qr_code, days_attended=days_attended)
     user_info.save()
     print(user_info.user.first_name)
     print(qr_code)
 
 
+
 def zip_to_pdf(filename):
+    """
+    to be corrected soon!
+    :param filename:
+    :return:
+    """
     path = settings.MEDIA_ROOT
     file = os.path.join(path,filename)
 
@@ -96,6 +156,12 @@ def zip_to_pdf(filename):
 
 
 def send_certificate(event):
+    """
+    Sends certificates to the users of a particular event.
+
+    :param event: The name of the event.
+    :return: Return the list of user to whom certificate has been sent.
+    """
     users = []
     event = Event.objects.get(name=event)
     organised_event = OrganisedEvent.objects.get(event=event)
@@ -103,8 +169,14 @@ def send_certificate(event):
     for user in users:
         print("Certificate sent to "+user.username)
 
+    return users
 
+#to be done soon!
 def send_email():
+    """
+    To be completed.
+    :return:
+    """
     fromaddr = "soniaditi1397@gmail.com"
     toaddr = "soniaditi1397@gmail.com"
 
@@ -122,6 +194,13 @@ def send_email():
 
 
 def read_csv(filename):
+    """
+    Reads a csv file to add users in the database for a particular event.
+
+    :param filename: The name of the .csv file
+            Format (Without spaces in between): first_name,last_name,username,password,email,type,DOB,college
+    :return: Returns the first name of the user as a confirmation
+    """
     path = settings.MEDIA_ROOT
     file = os.path.join(path, filename)
 
@@ -139,8 +218,17 @@ def read_csv(filename):
         college = line[7]
         add_user(username, password, first_name, last_name, email, user_type, dob, college)
 
+    return first_name
+
 
 def generate_qrcode(username,organised_event_name):
+    """
+    Generates the qrcode for a given user in an organised event
+
+    :param username: The username of the user.
+    :param organised_event_name: The name of the organised event.
+
+    """
     user=User.objects.get(username=username)
     user_id = int(user.id)
     hexa1 = hex(user_id).replace('0x', '').zfill(6).upper()
@@ -173,13 +261,26 @@ def generate_qrcode(username,organised_event_name):
 
 
 def check_latex(filename):
+    """
+    To be completed soon!
+    :param filename:
+    :return:
+    """
     path = settings.MEDIA_ROOT
-    file = os.path.join(path, filename)
+    latex_file = os.path.join(path, filename)
     os.chdir(path)
 
-    file=open(file,"w")
+    file=open(latex_file,"r")
     content=file.read()
+    print(content)
+    '''content = content % {'person': 'Diksha'}
+    file.close()
 
-    cmd = ['pdflatex', '-interaction', 'nonstopmode', file]
+    file=open(latex_file,'w')
+    file.write(content)
+    file.close()
+
+
+    cmd = ['pdflatex', '-interaction', 'nonstopmode', latex_file]
     proc = subprocess.Popen(cmd)
-    proc.communicate()
+    proc.communicate()'''
