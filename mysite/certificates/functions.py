@@ -122,7 +122,10 @@ def send_email():
 
 
 def read_csv(filename):
-    reader = csv.reader(open(filename), delimiter=",")
+    path = settings.MEDIA_ROOT
+    file = os.path.join(path, filename)
+
+    reader = csv.reader(open(file), delimiter=",")
     csv_file = list(reader)[1:]
 
     for line in csv_file:
