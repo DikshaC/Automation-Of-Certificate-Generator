@@ -7,7 +7,7 @@ from django.core.files.storage import FileSystemStorage
 
 class Profile(models.Model):
     user = models.OneToOneField(User)
-    DOB = models.DateField()
+    dob = models.DateField()
     college = models.CharField(max_length=300)
 
     def __str__(self):
@@ -15,16 +15,16 @@ class Profile(models.Model):
 
 
 class UserType(models.Model):
-    name = models.CharField(max_length=75)
+    user_type = models.CharField(max_length=75)
     user = models.ManyToManyField(User, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.user_type
 
 
 class Certificate(models.Model):
     abc = FileSystemStorage()
-    template = models.FileField(storage=abc, null=True)
+    template = models.FileField(storage=abc, blank=True)
     title = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
@@ -32,16 +32,16 @@ class Certificate(models.Model):
 
 
 class Event(models.Model):
-    name = models.CharField(max_length=100)
+    event = models.CharField(max_length=100)
     certificate = models.OneToOneField(Certificate, on_delete=models.CASCADE, primary_key=True)
     creator = models.ForeignKey(User, related_name="creator")
 
     def __str__(self):
-        return self.name
+        return self.event
 
 
 class OrganisedEvent(models.Model):
-    event = models.ForeignKey(Event)
+    organised_event = models.ForeignKey(Event)
     start_date = models.DateField()
     end_date = models.DateField()
     num_of_days = models.IntegerField()
@@ -50,13 +50,12 @@ class OrganisedEvent(models.Model):
     place = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.event.name
+        return self.organised_event.event
 
 
 class UserCertificateInfo(models.Model):
     user = models.ForeignKey(User)
     organised_event = models.ForeignKey(OrganisedEvent)
-    duration = models.IntegerField(blank=True, default=0)
     qrcode = models.CharField(max_length=10,default=0)
     user_type=models.ManyToManyField(UserType,related_name="user_type")
 
