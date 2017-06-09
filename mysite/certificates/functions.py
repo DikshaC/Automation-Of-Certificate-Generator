@@ -28,11 +28,12 @@ def add_user(username, password, first_name, last_name, email, user_type, dob, c
     user.save()
     profile = Profile(user=user, dob=dob, college=college)
     profile.save()
-    type_user = UserType.objects.get(user_type=user_type)
+    '''type_user = UserType.objects.get(user_type=user_type)
     type_user.save()
     type_user.user.add(user)
-    type_user.save()
-    return user
+    type_user.save()'''
+    return
+
 
 
 def add_certificate(template):
@@ -107,9 +108,10 @@ def add_participant(event, participants):
     return participants
 
 
-def add_user_certificate_info(user, qr_code, organised_event):
+def add_user_certificate_info(user, organised_event,user_type):
     """
-    Adds information about the certificate of a user in a particular event
+    Adds informations about the certificate of a user in a particular event
+
     :param user: User class object.
     :param qr_code: The qrcode of the certificate of the user of the event
     :param organised_event: The event object.
@@ -117,9 +119,13 @@ def add_user_certificate_info(user, qr_code, organised_event):
     :return:
     """
 
-    user_info = UserCertificateInfo(user=user, organised_event=organised_event, qrcode=qr_code)
+    user_info = UserCertificateInfo(user=user, organised_event=organised_event)
     user_info.save()
-
+    for type in user_type:
+        user_type=UserType.objects.get(user_type=type)
+        user_info.user_type.add(user_type)
+        user_info.save()
+    return
 
 def zip_to_pdf(filename):
     """
@@ -180,21 +186,35 @@ def read_csv(filename):
     path = settings.MEDIA_ROOT
     file = os.path.join(path, filename)
 
-    reader = csv.reader(open(file), delimiter=",")
+    file1=open(file,"r")
+    first_line=file1.readline().strip()
+    file1.close()
+    print(first_line)
+
+    event = Event.objects.get(event=first_line)
+    print(event.event)
+    organised_event = OrganisedEvent.objects.get(organised_event=event)
+
+    reader = csv.reader(open(file), delimiter=";")
     csv_file = list(reader)[1:]
 
     for line in csv_file:
-        first_name = line[0]
-        last_name = line[1]
-        username = line[2]
-        password = line[3]
-        email = line[4]
-        user_type = line[5]
-        dob = line[6]
-        college = line[7]
-        add_user(username, password, first_name, last_name, email, user_type, dob, college)
+        username = line[0]
+        user_type = line[5].split(',')
+        print(user_type)
+        if not User.objects.filter(username=username):
+            print("1")
+            password = line[1]
+            first_name = line[2]
+            last_name = line[3]
+            email = line[4]
+            dob = line[6]
+            college = line[7]
+            add_user(username, password, first_name, last_name, email, user_type, dob, college)
 
-    return first_name
+        print("2")
+        user = User.objects.get(username=username)
+        add_user_certificate_info(user, organised_event, user_type)
 
 
 def generate_qrcode(username, organised_event):
@@ -234,14 +254,10 @@ def generate_qrcode(username, organised_event):
 
 
 def send_email():
-    """
-        To be completed soon!
-    """
     fromaddr = "abcd@gmail.com"
     toaddr = "abcd@gmail.com"
 
     msg = "hi! msg "
-    #attach = ("csvonDesktp.csv")
 
     username = "abcd@gmail.com"
     password = "abcd"
