@@ -126,7 +126,6 @@ def add_user_certificate_info(user, organised_event,user_type):
         user_info.save()
     return
 
-
 def zip_to_pdf(filename):
     """
     to be corrected soon!
@@ -226,14 +225,14 @@ def generate_qrcode(username, organised_event):
     :param organised_event: The name of the organised event.
 
     """
-    user=User.objects.get(username=username)
+    user = User.objects.get(username=username)
     user_id = int(user.id)
     hexa1 = hex(user_id).replace('0x', '').zfill(6).upper()
 
-    event=Event.objects.get(event=organised_event)
-    organised_event=OrganisedEvent.objects.get(organised_event=event)
-    organised_event_id=int(organised_event.id)
-    hexa2=hex(organised_event_id).replace('0x','').zfill(6).upper()
+    event = Event.objects.get(event=organised_event)
+    organised_event = OrganisedEvent.objects.get(organised_event=event)
+    organised_event_id = int(organised_event.id)
+    hexa2 = hex(organised_event_id).replace('0x','').zfill(6).upper()
 
     serial_no = '{0}{1}'.format(hexa1,hexa2)
     serial_key = (hashlib.sha256(str(serial_no).encode('utf-8'))).hexdigest()
@@ -246,19 +245,15 @@ def generate_qrcode(username, organised_event):
             qrcode = serial_key[0:num]
             uniqueness = True
         else:
-            if present[0].user!=user:
+            if present[0].user != user:
                 num += 1
             else:  # when a user generates his certificate more than 1 time
                 qrcode = serial_key[0:num]
-                uniqueness=True
+                uniqueness = True
     add_user_certificate_info(user,qrcode,organised_event)
 
 
 def send_email():
-    """
-    To be completed soon!
-    :return:
-    """
     fromaddr = "abcd@gmail.com"
     toaddr = "abcd@gmail.com"
 
