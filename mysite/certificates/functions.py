@@ -19,7 +19,6 @@ def add_user(username, password, first_name, last_name, email, dob, college):
     :param first_name: User's first name
     :param last_name:  User's last name
     :param email: The current email-id used for sending certificates
-    :param user_type: Recognizes the role of the user in the event
     :param dob: Date Of birth
     :param college: College of the user (If exists)
 
@@ -79,7 +78,8 @@ def organise_event(event, start_date, end_date, organiser, place, participants):
     num_days = (end_date1-start_date1).days
     event = Event.objects.get(name=event)
     user = User.objects.get(username=organiser)
-    organised_event = OrganisedEvent(event=event, start_date=start_date, end_date=end_date, num_of_days=num_days, organiser=user, place=place)
+    organised_event = OrganisedEvent(event=event, start_date=start_date, end_date=end_date, num_of_days=num_days,
+                                     organiser=user, place=place)
     organised_event.save()
     for participant in participants:
         user = User.objects.get(username=participant)
@@ -111,7 +111,6 @@ def add_user_certificate_info(user, organised_event, user_type):
     Adds informations about the certificate of a user in a particular event
 
     :param user: User class object.
-    :param qr_code: The qrcode of the certificate of the user of the event
     :param organised_event: The event object.
     :param user_type: The list of roles played by the user in that event.
     :return:
@@ -141,7 +140,7 @@ def zip_to_pdf(filename):
     folder = folder[0]
 
     path_folder = path+folder
-    file = os.path.join(path_folder,folder+".tex")
+    file = os.path.join(path_folder, folder+".tex")
 
     os.chdir(path_folder)
 
@@ -149,7 +148,7 @@ def zip_to_pdf(filename):
     proc = subprocess.Popen(cmd)
     proc.communicate()
 
-    file = os.path.join(path_folder,folder+".pdf")
+    file = os.path.join(path_folder, folder+".pdf")
 
     certificate = Certificate(title="abc")
     certificate.template = file
@@ -163,7 +162,6 @@ def send_certificate(event):
     :param event: The name of the event.
     :return: Return the list of user to whom certificate has been sent.
     """
-    users = []
     event = Event.objects.get(name=event)
     organised_event = OrganisedEvent.objects.get(event=event)
     users = organised_event.participants.all()
@@ -182,7 +180,7 @@ def read_csv(filename):
     path = settings.MEDIA_ROOT
     file = os.path.join(path, filename)
 
-    file1 = open(file,"r")
+    file1 = open(file, "r")
     first_line = file1.readline().strip()
     file1.close()
 
@@ -223,9 +221,9 @@ def generate_qrcode(username, organised_event):
     event = Event.objects.get(name=organised_event)
     organised_event = OrganisedEvent.objects.get(event=event)
     organised_event_id = int(organised_event.id)
-    hexa2 = hex(organised_event_id).replace('0x','').zfill(6).upper()
+    hexa2 = hex(organised_event_id).replace('0x', '').zfill(6).upper()
 
-    serial_no = '{0}{1}'.format(hexa1,hexa2)
+    serial_no = '{0}{1}'.format(hexa1, hexa2)
     serial_key = (hashlib.sha256(str(serial_no).encode('utf-8'))).hexdigest()
 
     uniqueness = False
@@ -241,7 +239,7 @@ def generate_qrcode(username, organised_event):
             else:  # when a user generates his certificate more than 1 time
                 qrcode = serial_key[0:num]
                 uniqueness = True
-    add_user_certificate_info(user,qrcode,organised_event)
+    add_user_certificate_info(user, qrcode, organised_event)
 
 
 def send_email():
@@ -270,7 +268,7 @@ def check_latex(filename):
     latex_file = os.path.join(path, filename)
     os.chdir(path)
 
-    file = open(latex_file,"r")
+    file = open(latex_file, "r")
     content = file.read()
     print(content)
     '''content = content % {'person': 'Diksha'}
