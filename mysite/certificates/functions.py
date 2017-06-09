@@ -10,7 +10,7 @@ import zipfile
 from django.conf import settings
 
 
-def add_user(username, password, first_name, last_name, email, user_type, dob, college):
+def add_user(username, password, first_name, last_name, email, dob, college):
     """
     Adds a new participant/organiser/etc to the database
 
@@ -32,8 +32,7 @@ def add_user(username, password, first_name, last_name, email, user_type, dob, c
     type_user.save()
     type_user.user.add(user)
     type_user.save()'''
-    return
-
+    return user
 
 
 def add_certificate(template):
@@ -98,7 +97,7 @@ def add_participant(event, participants):
     :param participants: The list of participants to be added to an event organised.
     :return: Returns the participants's list which are successfull added to the database
     """
-    event = Event.objects.get(event=event)
+    event = Event.objects.get(name=event)
     organised_event = OrganisedEvent.objects.get(organised_event=event)
     for participant in participants:
         user = User.objects.get(username=participant)
@@ -131,6 +130,7 @@ def add_user_certificate_info(user, organised_event,user_type):
 def zip_to_pdf(filename):
     """
     to be corrected soon!
+3
     :param filename:
     :return:
     """
@@ -167,7 +167,7 @@ def send_certificate(event):
     :return: Return the list of user to whom certificate has been sent.
     """
     users = []
-    event = Event.objects.get(event=event)
+    event = Event.objects.get(name=event)
     organised_event = OrganisedEvent.objects.get(organised_event=event)
     users = organised_event.participants.all()
     for user in users:
@@ -192,7 +192,7 @@ def read_csv(filename):
     file1.close()
     print(first_line)
 
-    event = Event.objects.get(event=first_line)
+    event = Event.objects.get(name=first_line)
     print(event.event)
     organised_event = OrganisedEvent.objects.get(organised_event=event)
 
@@ -211,7 +211,7 @@ def read_csv(filename):
             email = line[4]
             dob = line[6]
             college = line[7]
-            add_user(username, password, first_name, last_name, email, user_type, dob, college)
+            add_user(username, password, first_name, last_name, email, dob, college)
 
         print("2")
         user = User.objects.get(username=username)
