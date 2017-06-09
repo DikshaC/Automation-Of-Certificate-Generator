@@ -41,7 +41,8 @@ def add_certificate(template, title):
     :param title: Title of certificate.
     :return: Returns the certificate object.
     """
-    certificate = Certificate(template=template, title=title)
+    file = zip_to_pdf(template)
+    certificate = Certificate(template=file, title=title)
     certificate.save()
     return certificate
 
@@ -55,9 +56,9 @@ def create_event(event, certificate, creator):
     :param creator: The user who created this event.
     :return: Return the event object.
     """
-    certificate = Certificate.objects.get(template=certificate)
-    user = User.objects.get(username=creator)
-    event = Event(name=event, certificate=certificate, creator=user)
+    #certificate = Certificate.objects.get(template=certificate)
+    #user = User.objects.get(username=creator)
+    event = Event(name=event, certificate=certificate, creator=creator)
     event.save()
     return event
 
@@ -77,9 +78,9 @@ def organise_event(event, start_date, end_date, organiser, place, participants):
     start_date1 = datetime.strptime(start_date, "%Y-%m-%d")
     end_date1 = datetime.strptime(end_date, "%Y-%m-%d")
     num_days = (end_date1-start_date1).days
-    event = Event.objects.get(name=event)
-    user = User.objects.get(username=organiser)
-    organised_event = OrganisedEvent(event=event, start_date=start_date, end_date=end_date, num_of_days=num_days, organiser=user, place=place)
+    #event = Event.objects.get(name=event)
+    #user = User.objects.get(username=organiser)
+    organised_event = OrganisedEvent(event=event, start_date=start_date, end_date=end_date, num_of_days=num_days, organiser=organiser, place=place)
     organised_event.save()
     for participant in participants:
         user = User.objects.get(username=participant)
@@ -96,7 +97,7 @@ def add_participant(event, participants):
     :param participants: The list of participants to be added to an event organised.
     :return: Returns the participants's list which are successfull added to the database
     """
-    event = Event.objects.get(name=event)
+    #event = Event.objects.get(name=event)
     organised_event = OrganisedEvent.objects.get(event=event)
     for participant in participants:
         user = User.objects.get(username=participant)
@@ -108,7 +109,7 @@ def add_participant(event, participants):
 
 def add_user_certificate_info(user, organised_event, user_type):
     """
-    Adds informations about the certificate of a user in a particular event
+    Adds information about the certificate of a user in a particular event
 
     :param user: User class object.
     :param qr_code: The qrcode of the certificate of the user of the event
@@ -120,9 +121,10 @@ def add_user_certificate_info(user, organised_event, user_type):
     user_info = UserCertificateInfo(user=user, organised_event=organised_event)
     user_info.save()
     for types in user_type:
-        user_type = UserType.objects.get(user_type=types)
+        user_type = UserType.objects.get(name=types)
         user_info.user_type.add(user_type)
         user_info.save()
+    return user_info
 
 
 def zip_to_pdf(filename):
@@ -150,10 +152,7 @@ def zip_to_pdf(filename):
     proc.communicate()
 
     file = os.path.join(path_folder,folder+".pdf")
-
-    certificate = Certificate(title="abc")
-    certificate.template = file
-    certificate.save()
+    return file
 
 
 def send_certificate(event):
@@ -208,7 +207,7 @@ def read_csv(filename):
         add_user_certificate_info(user, organised_event, user_type)
 
 
-def generate_qrcode(username, organised_event):
+def generate_qrcode(user, organised_event):
     """
     Generates the qrcode for a given user in an organised event
 
@@ -216,12 +215,12 @@ def generate_qrcode(username, organised_event):
     :param organised_event: The name of the organised event.
 
     """
-    user = User.objects.get(username=username)
+    #user = User.objects.get(username=username)
     user_id = int(user.id)
     hexa1 = hex(user_id).replace('0x', '').zfill(6).upper()
 
-    event = Event.objects.get(name=organised_event)
-    organised_event = OrganisedEvent.objects.get(event=event)
+    #event = Event.objects.get(name=organised_event)
+    #organised_event = OrganisedEvent.objects.get(event=organised_event)
     organised_event_id = int(organised_event.id)
     hexa2 = hex(organised_event_id).replace('0x','').zfill(6).upper()
 
@@ -230,6 +229,7 @@ def generate_qrcode(username, organised_event):
 
     uniqueness = False
     num = 5
+    qrcode=""
     while not uniqueness:
         present = UserCertificateInfo.objects.filter(qrcode__startswith=serial_key[0:num])
         if not present:
@@ -241,7 +241,11 @@ def generate_qrcode(username, organised_event):
             else:  # when a user generates his certificate more than 1 time
                 qrcode = serial_key[0:num]
                 uniqueness = True
-    add_user_certificate_info(user,qrcode,organised_event)
+
+    user_info = UserCertificateInfo.objects.get(user=user, organised_event=organised_event)
+    user_info.qrcode = qrcode
+    user_info.save()
+    return qrcode
 
 
 def send_email():
