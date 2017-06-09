@@ -21,7 +21,7 @@ class Test(TestCase):
         self.assertEqual(certificate, certificate1)
 
     def test_createEvent(self):
-        event = create_event("test", certificate=Certificate(), user=User())
+        event = create_event("test", certificate, user)
         event1 = Event.objects.get(name="test")
-        self.assertEqual(event,event1)
+        self.assertEqual(event, event1)
 

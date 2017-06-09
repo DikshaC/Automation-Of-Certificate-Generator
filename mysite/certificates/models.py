@@ -15,11 +15,10 @@ class Profile(models.Model):
 
 
 class UserType(models.Model):
-    user_type = models.CharField(max_length=75)
-    user = models.ManyToManyField(User, blank=True)
+    name = models.CharField(max_length=75)
 
     def __str__(self):
-        return self.user_type
+        return self.name
 
 
 class Certificate(models.Model):
@@ -32,16 +31,16 @@ class Certificate(models.Model):
 
 
 class Event(models.Model):
-    event = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
     certificate = models.OneToOneField(Certificate, on_delete=models.CASCADE, primary_key=True)
     creator = models.ForeignKey(User, related_name="creator")
 
     def __str__(self):
-        return self.event
+        return self.name
 
 
 class OrganisedEvent(models.Model):
-    organised_event = models.ForeignKey(Event)
+    event = models.ForeignKey(Event)
     start_date = models.DateField()
     end_date = models.DateField()
     num_of_days = models.IntegerField()
@@ -50,14 +49,14 @@ class OrganisedEvent(models.Model):
     place = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.organised_event.event
+        return self.event.name
 
 
 class UserCertificateInfo(models.Model):
     user = models.ForeignKey(User)
     organised_event = models.ForeignKey(OrganisedEvent)
-    qrcode = models.CharField(max_length=10,default=0)
-    user_type=models.ManyToManyField(UserType,related_name="type_user")
+    qrcode = models.CharField(max_length=10, default=0)
+    user_type = models.ManyToManyField(UserType, related_name="type_of_user")
 
     def __str__(self):
         return self.user.first_name
