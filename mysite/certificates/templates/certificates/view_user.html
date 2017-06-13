@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block body %}
+<h4>All Users:</h4>
+{% for u in object_list %}
+    <h5> {{ u.username }}</h5>
+{% endfor %}
+{% endblock %}
