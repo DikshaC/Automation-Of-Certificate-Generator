@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block body %}
+<h4>all events</h4>
+{% for e in object_list %}
+    <h5> {{ e.name }}</h5>
+{% endfor %}
+{% endblock %}
