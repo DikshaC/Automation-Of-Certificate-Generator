@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.db import models
-from django.core.files.storage import FileSystemStorage
 
 
 class Profile(models.Model):
@@ -27,8 +26,7 @@ class UserType(models.Model):
 
 
 class Certificate(models.Model):
-    abc = FileSystemStorage()
-    template = models.FileField(storage=abc, blank=True)
+    template = models.FileField(blank=True)
     title = models.CharField(max_length=100, blank=True)
 
     def __str__(self):

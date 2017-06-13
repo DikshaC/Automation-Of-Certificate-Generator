@@ -27,8 +27,6 @@ def add_user(username, password, first_name, last_name, email, dob, college):
     user.save()
     profile = Profile(user=user, dob=dob, college=college)
     profile.save()
-    '''user_type = UserType(name=user_type)
-    user_type.save()'''
     return user
 
 
@@ -40,8 +38,8 @@ def add_certificate(template, title):
     :param title: Title of certificate.
     :return: Returns the certificate object.
     """
-    file = zip_to_pdf(template)
-    certificate = Certificate(template=file, title=title)
+    #file = zip_to_pdf(template)
+    certificate = Certificate(template=template, title=title)
     certificate.save()
     return certificate
 
@@ -125,14 +123,18 @@ def add_user_certificate_info(user, organised_event, user_type):
     return user_info
 
 
-def zip_to_pdf(filename):
+def zip_to_pdf(certificate):
     """
     to be corrected soon!
+
     :param filename:
     :return:
     """
+
+    file = certificate.template
+
     path = settings.MEDIA_ROOT
-    file = os.path.join(path, filename)
+    filename=os.path.basename(file.name)
 
     with zipfile.ZipFile(file, "r") as zip_ref:
         zip_ref.extractall(settings.MEDIA_ROOT)
