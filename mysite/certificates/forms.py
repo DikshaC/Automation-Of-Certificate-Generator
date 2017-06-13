@@ -28,7 +28,31 @@ class RegistrationForm(forms.Form):
                              'gender', 'receive_news', 'agree_toc'))
 
 
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['user', 'dob', 'college']
+
+
 class CertificateForm(forms.ModelForm):
     class Meta:
         model = Certificate
-        fields = ['template','title']
+        fields = ['template', 'title']
+
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['name', 'certificate', 'creator']
+
+
+class OrganisedEventForm(forms.ModelForm):
+    class Meta:
+        model = OrganisedEvent
+        fields = ['event', 'start_date', 'end_date', 'num_of_days', 'participants', 'organiser', 'place']
+
+
+class UserCertificateInfoForm(forms.ModelForm):
+        class Meta:
+            model = UserCertificateInfo
+            fields = ['user', 'organised_event', 'qrcode', 'user_type']

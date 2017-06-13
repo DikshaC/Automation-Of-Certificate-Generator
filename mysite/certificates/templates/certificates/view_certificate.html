@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block body %}
+<h4>All Certificates:</h4>
+{% for c in object_list %}
+    <h5> {{ c.title }}</h5>
+{% endfor %}
+{% endblock %}
