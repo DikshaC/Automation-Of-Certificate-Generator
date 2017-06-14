@@ -19,9 +19,23 @@ def login(request):
                 return redirect('home/')
             else:
                 return render(request, 'certificates/login.html', {'form': form})
+        else:
+            return render(request, 'certificates/login.html', {'form': form})
     else:
         form = LoginForm()
         return render(request, 'certificates/login.html', {'form': form})
+
+def register(request):
+    if request.method == "POST":
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user=User(username=form.cleaned_data['username'],password=form.cleaned_data['password'],email=form.cleaned_data['email'],
+                      first_name=form.cleaned_data['first_name'],last_name=form.cleaned_data['last_name'])
+            user.save()
+            return redirect('/account/home')
+    else:
+        form = RegistrationForm()
+        return render(request, "certificates/register.html", {'form': form})
 
 
 def add_user(request):
@@ -73,7 +87,7 @@ def add_event(request):
         if form.is_valid():
             model_instance = form.save(commit=False)
             model_instance.save()
-            create_event(form['name'].value(), form['certificate'].value(), form['creator'].value())
+            functions.create_event(form['name'].value(), form['certificate'].value(), form['creator'].value())
             return redirect('/')
     else:
         form = EventForm()
