@@ -72,9 +72,7 @@ def organise_event(event, start_date, end_date, organiser, place, participants):
     :param participants: The participating users in the event.
     :return: Returns the object of the organised_event class
     """
-    start_date1 = datetime.strptime(start_date, "%Y-%m-%d")
-    end_date1 = datetime.strptime(end_date, "%Y-%m-%d")
-    num_days = (end_date1-start_date1).days
+    num_days = (end_date-start_date).days
     #event = Event.objects.get(name=event)
     #user = User.objects.get(username=organiser)
     organised_event = OrganisedEvent(event=event, start_date=start_date, end_date=end_date, num_of_days=num_days, organiser=organiser, place=place)

@@ -1,12 +1,12 @@
-{% include 'material/includes/material_css.html' %}
-{% include 'material/includes/material_js.html' %}
 <html>
         {% load staticfiles%}
-
+        {% include 'material/includes/material_css.html' %}
         <script src="{% static 'material/js/jquery.js' %}"></script>
-                {%block head%}
-                        <meta charset="utf-8">
-                {%endblock%}
-                {%block body%}
-                {%endblock%}
+        {% include 'material/includes/material_js.html' %}
+        {% load material_form %}
+        {%block head%}
+            <meta charset="utf-8">
+        {%endblock%}
+        {%block body%}
+        {%endblock%}
 </html>
