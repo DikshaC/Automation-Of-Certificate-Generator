@@ -49,7 +49,7 @@ class EventForm(forms.ModelForm):
 class OrganisedEventForm(forms.ModelForm):
     class Meta:
         model = OrganisedEvent
-        fields = ['event', 'start_date', 'end_date', 'num_of_days', 'participants', 'organiser', 'place']
+        fields = ['event', 'start_date', 'end_date', 'organiser', 'place', 'participants']
 
 
 class UserCertificateInfoForm(forms.ModelForm):

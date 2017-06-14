@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block body %}
 <h4>All Events:</h4>
-{% for e in object_list %}
-    <h5> {{ e.name }}</h5>
+{% for event in object_list %}
+    <a href="{% url 'edit_event' %}?name={{event.name}}"> {{ event.name }}</a><br>
 {% endfor %}
 {% endblock %}

@@ -2,6 +2,6 @@
 {% block body %}
 <h4>All Organised Events:</h4>
 {% for oe in object_list %}
-    <h5> {{ oe.event.name }}</h5>
+    <a href="{% url 'edit_organised_event' %}?event={{oe.event.name}}"> {{ oe.event.name }}</a><br>
 {% endfor %}
 {% endblock %}

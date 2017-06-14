@@ -76,7 +76,7 @@ class OrganisedEvent(models.Model):
         participants = self.participants.all()
         users=[]
         for participant in participants:
-            users.append(participant.first_name)
+            users.append(participant)
 
         return users
 
