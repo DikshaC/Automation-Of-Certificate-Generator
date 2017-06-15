@@ -43,8 +43,6 @@ def add_user(request):
     if request.method == "POST":
         form = UserForm(request.POST)
         if form.is_valid():
-            model_instance = form.save(commit=False)
-            model_instance.save()
             return redirect('/account/home')
     else:
         form = UserForm()
@@ -67,8 +65,6 @@ def add_certificate(request):
     if request.method == "POST":
         form = CertificateForm(request.POST)
         if form.is_valid():
-            model_instance = form.save(commit=False)
-            model_instance.save()
             functions.add_certificate(form.cleaned_data['template'], form.cleaned_data['title'])
             return redirect('/account/home')
     else:
@@ -79,8 +75,16 @@ def add_certificate(request):
 def edit_certificate(request):
     title = request.GET.get('title')
     certificate = Certificate.objects.get(title=title)
-    form = CertificateForm(initial={'title': title,'template': certificate.template})
-    return render(request, 'certificates/add_modelform.html', {'form': form})
+    if request.method == "POST":
+        form = CertificateForm(request.POST)
+        if form.is_valid():
+            certificate.template = form.cleaned_data['template']
+            certificate.title = form.cleaned_data['title']
+            certificate.save()
+            return redirect('/account/home')
+    else:
+        form = CertificateForm(initial={'title': title,'template': certificate.template})
+        return render(request, 'certificates/add_modelform.html', {'form': form})
 
 
 def view_certificate(request):
@@ -93,8 +97,6 @@ def add_event(request):
     if request.method == "POST":
         form = EventForm(request.POST)
         if form.is_valid():
-            model_instance = form.save(commit=False)
-            model_instance.save()
             functions.create_event(form.cleaned_data['name'], form.cleaned_data['certificate'], form.cleaned_data['creator'])
             return redirect('/account/home')
         else:
@@ -107,8 +109,17 @@ def add_event(request):
 def edit_event(request):
     name = request.GET.get('name')
     event = Event.objects.get(name=name)
-    form = EventForm(initial={'name': name, 'certificate': event.certificate, 'creator': event.creator})
-    return render(request, 'certificates/add_modelform.html', {'form': form})
+    if request.method == "POST":
+        form = EventForm(request.POST, instance=event)
+        if form.is_valid():
+            event.certificate = form.cleaned_data['certificate']
+            event.creator = form.cleaned_data['creator']
+            event.name = form.cleaned_data['name']
+            event.save()
+            return redirect('/account/home')
+    else:
+        form = EventForm(initial={'name': name, 'certificate': event.certificate, 'creator': event.creator})
+        return render(request, 'certificates/add_modelform.html', {'form': form})
 
 
 def view_event(request):
@@ -121,8 +132,9 @@ def organise_event(request):
     if request.method == "POST":
         form = OrganisedEventForm(request.POST)
         if form.is_valid():
-            functions.organise_event(form.cleaned_data['event'], form.cleaned_data['start_date'], form.cleaned_data['end_date'],
-                                     form.cleaned_data['organiser'], form.cleaned_data['place'], form.cleaned_data['participants'])
+            functions.organise_event(form.cleaned_data['event'], form.cleaned_data['start_date'],
+                                     form.cleaned_data['end_date'],form.cleaned_data['organiser'],
+                                     form.cleaned_data['place'], form.cleaned_data['participants'])
             return redirect('/account/home')
     else:
         form = OrganisedEventForm()
@@ -132,11 +144,23 @@ def organise_event(request):
 def edit_organised_event(request):
     event = request.GET.get('event')
     organised_event = OrganisedEvent.objects.get(event=Event.objects.get(name=event))
-    form = OrganisedEventForm(initial={'event': organised_event.event, 'start_date': organised_event.start_date,
-                                       'end_date': organised_event.end_date,
-                                       'organiser': organised_event.organiser, 'place': organised_event.place,
-                                       'participants': [participant.pk for participant in organised_event.get_participants()]})
-    return render(request, 'certificates/add_modelform.html', {'form': form})
+    if request.method == "POST":
+        form = OrganisedEventForm(request.POST)
+        if form.is_valid():
+            organised_event.event = form.cleaned_data['event']
+            organised_event.start_date = form.cleaned_data['start_date']
+            organised_event.end_date = form.cleaned_data['end_date']
+            organised_event.organiser = form.cleaned_data['organiser']
+            organised_event.place = form.cleaned_data['place']
+            organised_event.participants = form.cleaned_data['participants']
+            organised_event.save()
+            return redirect('/account/home')
+    else:
+        form = OrganisedEventForm(initial={'event': organised_event.event, 'start_date': organised_event.start_date,
+                                           'end_date': organised_event.end_date,
+                                           'organiser': organised_event.organiser, 'place': organised_event.place,
+                                           'participants': [participant.pk for participant in organised_event.get_participants()]})
+        return render(request, 'certificates/add_modelform.html', {'form': form})
 
 
 def view_organised_event(request):
