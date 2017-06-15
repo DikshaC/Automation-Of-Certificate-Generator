@@ -6,8 +6,9 @@
         <form method="POST">
             {% csrf_token %}
             {% form form=form %} {% endform %}
-            <button type="submit" class="btn btn primary" >Login</button>
-            <input class="btn" value="Register" onclick="location.href='{% url 'register' %}'" onshow="true">
+            <button type="submit" class="btn btn primary" >Login</button><br><br>
+            <b>Not a member?Register</b>
+            <button type="button"  class="btn" onclick="location.href='{% url 'register' %}'">Register</button>
         </form>
 
 {% endblock %}

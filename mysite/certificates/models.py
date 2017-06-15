@@ -38,7 +38,7 @@ class Certificate(models.Model):
 
 class Event(models.Model):
     name = models.CharField(max_length=100)
-    certificate = models.OneToOneField(Certificate, on_delete=models.CASCADE, primary_key=True)
+    certificate = models.OneToOneField(Certificate, on_delete=models.CASCADE)
     creator = models.ForeignKey(User, related_name="creator")
 
     def __str__(self):
