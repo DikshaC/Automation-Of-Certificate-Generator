@@ -285,3 +285,6 @@ def check_latex(filename):
     cmd = ['pdflatex', '-interaction', 'nonstopmode', latex_file]
     proc = subprocess.Popen(cmd)
     proc.communicate()'''
+
+
+

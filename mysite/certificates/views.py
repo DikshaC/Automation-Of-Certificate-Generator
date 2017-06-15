@@ -14,8 +14,6 @@ def login(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
-            model_instance = form.save(commit=False)
-            model_instance.save()
             user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
             if user is not None:
                 return redirect('home/')
@@ -26,6 +24,7 @@ def login(request):
     else:
         form = LoginForm()
         return render(request, 'certificates/login.html', {'form': form})
+
 
 def register(request):
     if request.method == "POST":
