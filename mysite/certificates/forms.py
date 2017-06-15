@@ -29,10 +29,10 @@ class RegistrationForm(forms.Form):
                              Row('first_name', 'last_name')))
 
 
-class UserForm(forms.ModelForm):
+class UserProfileForm(forms.ModelForm):
     class Meta:
-        model = Profile
-        fields = ['user', 'dob', 'college']
+        model = UserProfile
+        fields = ['first_name','last_name', 'dob', 'college', 'email', 'contact_number']
 
 
 class CertificateForm(forms.ModelForm):

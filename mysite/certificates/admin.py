@@ -12,7 +12,7 @@ admin.site.register(OrganisedEvent)
 admin.site.register(Certificate)
 admin.site.register(UserType)
 admin.site.register(UserCertificateInfo)
-admin.site.register(Profile)
+admin.site.register(UserProfile)
 
 
 

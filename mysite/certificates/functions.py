@@ -10,7 +10,7 @@ import zipfile
 from django.conf import settings
 
 
-def add_user(username, password, first_name, last_name, email, dob, college):
+def add_user_profile(first_name, last_name, email, dob, college, contact_number):
     """
     Adds a new participant/organiser/etc to the database
 
@@ -23,10 +23,8 @@ def add_user(username, password, first_name, last_name, email, dob, college):
     :param college: College of the user (If exists)
 
     """
-    user = User(username=username, password=password, first_name=first_name, last_name=last_name, email=email)
+    user = UserProfile(first_name=first_name, last_name=last_name, email=email, dob=dob, college=college, contact_number=contact_number)
     user.save()
-    profile = Profile(user=user, dob=dob, college=college)
-    profile.save()
     return user
 
 
@@ -78,28 +76,28 @@ def organise_event(event, start_date, end_date, organiser, place, participants):
     organised_event = OrganisedEvent(event=event, start_date=start_date, end_date=end_date, num_of_days=num_days, organiser=organiser, place=place)
     organised_event.save()
     for participant in participants:
-        user = User.objects.get(username=participant)
-        organised_event.participants.add(user)
+        #user = UserProfile.objects.get(email=participant.email)
+        organised_event.participants.add(participant)
         organised_event.save()
     return organised_event
 
 
-def add_participant(event, participants):
+def add_participant(event, participants_email):
     """
     Adds participants/users to the events organised.
 
     :param event: The organised event name in which participants are to be added
-    :param participants: The list of participants to be added to an event organised.
+    :param participants_email: The list of participants to be added to an event organised.
     :return: Returns the participants's list which are successfull added to the database
     """
     #event = Event.objects.get(name=event)
     organised_event = OrganisedEvent.objects.get(event=event)
-    for participant in participants:
-        user = User.objects.get(username=participant)
+    for participant_email in participants_email:
+        user = UserProfile.objects.get(email=participant_email)
         organised_event.participants.add(user)
         organised_event.save()
 
-    return participants
+    return participants_email
 
 
 def add_user_certificate_info(user, organised_event, user_type):
@@ -189,18 +187,17 @@ def read_csv(filename):
     csv_file = list(reader)[1:]
 
     for line in csv_file:
-        username = line[0]
-        user_type = line[5].split(',')
-        if not User.objects.filter(username=username):
-            password = line[1]
-            first_name = line[2]
-            last_name = line[3]
-            email = line[4]
-            dob = line[6]
-            college = line[7]
-            add_user(username, password, first_name, last_name, email, dob, college)
+        email = line[2]
+        user_type = line[6].split(',')
+        if not UserProfile.objects.filter(email=email):
+            first_name = line[0]
+            last_name = line[1]
+            dob = line[3]
+            college = line[4]
+            contact_number = line[5]
+            add_user_profile(first_name, last_name, email, dob, college, contact_number)
 
-        user = User.objects.get(username=username)
+        user = UserProfile.objects.get(email=email)
         add_user_certificate_info(user, organised_event, user_type)
 
 

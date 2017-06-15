@@ -2,6 +2,6 @@
 {% block body %}
 <h4>All Users:</h4>
 {% for u in object_list %}
-    <a href=""> {{ u.username }}</a><br>
+    <a href="{% url 'edit_user' %}?email={{u.email}}"> {{ u.first_name }}</a><br>
 {% endfor %}
 {% endblock %}

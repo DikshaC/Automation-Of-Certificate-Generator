@@ -3,13 +3,16 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-class Profile(models.Model):
-    user = models.OneToOneField(User)
+class UserProfile(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+    contact_number = models.IntegerField(max_length=10)
     dob = models.DateField()
     college = models.CharField(max_length=300)
 
     def __str__(self):
-        return self.user.first_name
+        return self.first_name
 
     def get_dob(self):
         return self.dob
@@ -56,7 +59,7 @@ class OrganisedEvent(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     num_of_days = models.IntegerField()
-    participants = models.ManyToManyField(User, blank=True, related_name="participants")
+    participants = models.ManyToManyField(UserProfile, blank=True, related_name="participants")
     organiser = models.ForeignKey(User, related_name="organiser")
     place = models.CharField(max_length=100)
 
@@ -88,7 +91,7 @@ class OrganisedEvent(models.Model):
 
 
 class UserCertificateInfo(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(UserProfile)
     organised_event = models.ForeignKey(OrganisedEvent)
     qrcode = models.CharField(max_length=10, default=0)
     user_type = models.ManyToManyField(UserType, related_name="user_type")

@@ -39,24 +39,40 @@ def register(request):
         return render(request, "certificates/register.html", {'form': form})
 
 
-def add_user(request):
+def add_user_profile(request):
     if request.method == "POST":
-        form = UserForm(request.POST)
+        form = UserProfileForm(request.POST)
         if form.is_valid():
+            functions.add_user_profile(form.cleaned_data['first_name'],form.cleaned_data['last_name'],form.cleaned_data['email']
+                                       ,form.cleaned_data['dob'],form.cleaned_data['college'],form.cleaned_data['contact_number'])
             return redirect('/account/home')
     else:
-        form = UserForm()
+        form = UserProfileForm()
         return render(request, "certificates/add_modelform.html", {'form': form})
 
 
-def edit_user(request):
-    user = User.objects.all()
-    context = {"object_list": user}
-    return render(request, 'certificates/view_user.html', context)
+def edit_user_profile(request):
+    email = request.GET.get('email')
+    user = UserProfile.objects.get(email=email)
+    if request.method == "POST":
+        form = UserProfileForm(request.POST)
+        if form.is_valid():
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            user.email = form.cleaned_data['email']
+            user.dob = form.cleaned_data['dob']
+            user.college = form.cleaned_data['college']
+            user.contact_number = form.cleaned_data['contact_number']
+            user.save()
+            return redirect('/account/home')
+    else:
+        form = UserProfileForm(initial={'first_name': user.first_name,'last_name': user.last_name,'email':email, 'dob':user.dob,
+                                        'college':user.college,'contact_number':user.contact_number})
+        return render(request, 'certificates/add_modelform.html', {'form': form})
 
 
-def view_user(request):
-    user = User.objects.all()
+def view_user_profile(request):
+    user = UserProfile.objects.all()
     context = {"object_list":user}
     return render(request, 'certificates/view_user.html', context)
 
