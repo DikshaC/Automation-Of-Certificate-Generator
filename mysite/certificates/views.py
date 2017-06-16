@@ -7,6 +7,7 @@ from .models import *
 from . import functions
 from django.contrib.auth import authenticate, logout ,login as LOGIN
 
+
 @login_required(login_url='/account')
 def home(request):
     if request.user.is_authenticated():
