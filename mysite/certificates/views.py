@@ -1,11 +1,13 @@
 from __future__ import unicode_literals
+
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import *
 from .models import *
 from . import functions
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout ,login as LOGIN
 
-
+@login_required(login_url='/account')
 def home(request):
     if request.user.is_authenticated():
         return render(request, 'certificates/index.html')
@@ -14,19 +16,29 @@ def home(request):
 
 
 def login(request):
-    if request.method == "POST":
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
-            if user is not None:
-                return redirect('home/')
+    if not request.user.is_authenticated():
+        if request.method == "POST":
+            form = LoginForm(request.POST)
+            if form.is_valid():
+                user = authenticate(request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+                if user is not None:
+                    LOGIN(request, user)
+                    return redirect('home/')
+                else:
+                    return render(request, 'certificates/login.html', {'form': form})
             else:
                 return render(request, 'certificates/login.html', {'form': form})
         else:
+            form = LoginForm()
             return render(request, 'certificates/login.html', {'form': form})
+
     else:
-        form = LoginForm()
-        return render(request, 'certificates/login.html', {'form': form})
+        return redirect('/account/home')
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('/account')
 
 
 def register(request):

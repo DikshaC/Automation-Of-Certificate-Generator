@@ -125,3 +125,4 @@ STATIC_URL = '/static/certificates/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 MEDIA_URL = 'media/'
+
