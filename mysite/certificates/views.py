@@ -13,20 +13,24 @@ def home(request):
 
 
 def login(request):
-    if request.method == "POST":
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            user = authenticate(request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
-            if user is not None:
-                LOGIN(request, user)
-                return redirect('home/')
+    if not request.user.is_authenticated():
+        if request.method == "POST":
+            form = LoginForm(request.POST)
+            if form.is_valid():
+                user = authenticate(request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+                if user is not None:
+                    LOGIN(request, user)
+                    return redirect('home/')
+                else:
+                    return render(request, 'certificates/login.html', {'form': form})
             else:
                 return render(request, 'certificates/login.html', {'form': form})
         else:
+            form = LoginForm()
             return render(request, 'certificates/login.html', {'form': form})
+
     else:
-        form = LoginForm()
-        return render(request, 'certificates/login.html', {'form': form})
+        return redirect('/account/home')
 
 
 def logout_user(request):
