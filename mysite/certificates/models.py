@@ -7,7 +7,7 @@ class UserProfile(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
-    contact_number = models.IntegerField(max_length=10)
+    contact_number = models.IntegerField()
     dob = models.DateField()
     college = models.CharField(max_length=300)
 
@@ -77,7 +77,7 @@ class OrganisedEvent(models.Model):
 
     def get_participants(self):
         participants = self.participants.all()
-        users=[]
+        users = []
         for participant in participants:
             users.append(participant)
 
@@ -113,5 +113,4 @@ class UserCertificateInfo(models.Model):
         type = []
         for t in types:
             type.append(t.name)
-
-        return type
+            return type

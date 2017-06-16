@@ -17,12 +17,6 @@ class RegistrationForm(forms.Form):
     password_confirm = forms.CharField(widget=forms.PasswordInput, label="Confirm password")
     first_name = forms.CharField(required=False)
     last_name = forms.CharField(required=False)
-
-
-    #gender = forms.ChoiceField(choices=((None, ''), ('F', 'Female'), ('M', 'Male'), ('O', 'Other')))
-    #receive_news = forms.BooleanField(required=False, label='I want to receive news and special offers')
-    #agree_toc = forms.BooleanField(required=True, label='I agree with the Terms and Conditions')
-
     layout = Layout('username', 'email',
                     Row('password', 'password_confirm'),
                     Fieldset('Personal details',
@@ -32,7 +26,7 @@ class RegistrationForm(forms.Form):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['first_name','last_name', 'dob', 'college', 'email', 'contact_number']
+        fields = ['first_name', 'last_name', 'dob', 'college', 'email', 'contact_number']
 
 
 class CertificateForm(forms.ModelForm):

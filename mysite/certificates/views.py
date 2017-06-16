@@ -7,7 +7,10 @@ from django.contrib.auth import authenticate
 
 
 def home(request):
-    return render(request, 'certificates/home.html')
+    if request.user.is_authenticated():
+        return render(request, 'certificates/index.html')
+    else:
+        return redirect('/account')
 
 
 def login(request):
@@ -30,8 +33,9 @@ def register(request):
     if request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            user=User(username=form.cleaned_data['username'],password=form.cleaned_data['password'],email=form.cleaned_data['email'],
-                      first_name=form.cleaned_data['first_name'],last_name=form.cleaned_data['last_name'])
+            user = User(username=form.cleaned_data['username'], password=form.cleaned_data['password'],
+                        email=form.cleaned_data['email'],
+                        first_name=form.cleaned_data['first_name'], last_name=form.cleaned_data['last_name'])
             user.save()
             return redirect('/account/home')
     else:
@@ -43,8 +47,9 @@ def add_user_profile(request):
     if request.method == "POST":
         form = UserProfileForm(request.POST)
         if form.is_valid():
-            functions.add_user_profile(form.cleaned_data['first_name'],form.cleaned_data['last_name'],form.cleaned_data['email']
-                                       ,form.cleaned_data['dob'],form.cleaned_data['college'],form.cleaned_data['contact_number'])
+            functions.add_user_profile(form.cleaned_data['first_name'], form.cleaned_data['last_name'],
+                                       form.cleaned_data['email'], form.cleaned_data['dob'],
+                                       form.cleaned_data['college'], form.cleaned_data['contact_number'])
             return redirect('/account/home')
     else:
         form = UserProfileForm()
@@ -66,14 +71,15 @@ def edit_user_profile(request):
             user.save()
             return redirect('/account/home')
     else:
-        form = UserProfileForm(initial={'first_name': user.first_name,'last_name': user.last_name,'email':email, 'dob':user.dob,
-                                        'college':user.college,'contact_number':user.contact_number})
+        form = UserProfileForm(initial={'first_name': user.first_name, 'last_name': user.last_name, 'email': email,
+                                        'dob': user.dob, 'college': user.college,
+                                        'contact_number': user.contact_number})
         return render(request, 'certificates/add_modelform.html', {'form': form})
 
 
 def view_user_profile(request):
     user = UserProfile.objects.all()
-    context = {"object_list":user}
+    context = {"object_list": user}
     return render(request, 'certificates/view_user.html', context)
 
 
@@ -99,7 +105,7 @@ def edit_certificate(request):
             certificate.save()
             return redirect('/account/home')
     else:
-        form = CertificateForm(initial={'title': title,'template': certificate.template})
+        form = CertificateForm(initial={'title': title, 'template': certificate.template})
         return render(request, 'certificates/add_modelform.html', {'form': form})
 
 
@@ -109,11 +115,16 @@ def view_certificate(request):
     return render(request, 'certificates/view_certificate.html', context)
 
 
+def send_certificate(request):
+    return redirect(render, 'certificate/send_certificate.html')
+
+
 def add_event(request):
     if request.method == "POST":
         form = EventForm(request.POST)
         if form.is_valid():
-            functions.create_event(form.cleaned_data['name'], form.cleaned_data['certificate'], form.cleaned_data['creator'])
+            functions.create_event(form.cleaned_data['name'], form.cleaned_data['certificate'],
+                                   form.cleaned_data['creator'])
             return redirect('/account/home')
         else:
             return render(request, "certificates/add_modelform.html", {'form': form})
@@ -149,7 +160,7 @@ def organise_event(request):
         form = OrganisedEventForm(request.POST)
         if form.is_valid():
             functions.organise_event(form.cleaned_data['event'], form.cleaned_data['start_date'],
-                                     form.cleaned_data['end_date'],form.cleaned_data['organiser'],
+                                     form.cleaned_data['end_date'], form.cleaned_data['organiser'],
                                      form.cleaned_data['place'], form.cleaned_data['participants'])
             return redirect('/account/home')
     else:
@@ -175,7 +186,8 @@ def edit_organised_event(request):
         form = OrganisedEventForm(initial={'event': organised_event.event, 'start_date': organised_event.start_date,
                                            'end_date': organised_event.end_date,
                                            'organiser': organised_event.organiser, 'place': organised_event.place,
-                                           'participants': [participant.pk for participant in organised_event.get_participants()]})
+                                           'participants':
+                                               [participant.pk for participant in organised_event.get_participants()]})
         return render(request, 'certificates/add_modelform.html', {'form': form})
 
 
@@ -183,4 +195,3 @@ def view_organised_event(request):
     organised_event = OrganisedEvent.objects.all()
     context = {"object_list": organised_event}
     return render(request, 'certificates/view_organised_event.html', context)
-
