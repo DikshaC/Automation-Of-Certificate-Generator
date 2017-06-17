@@ -4,6 +4,7 @@ import os
 import subprocess
 import smtplib
 from datetime import datetime
+from django.core.mail import EmailMessage
 from .models import *
 from django.contrib.auth.models import User
 import zipfile
@@ -13,17 +14,16 @@ from django.conf import settings
 def add_user_profile(first_name, last_name, email, dob, college, contact_number):
     """
     Adds a new participant/organiser/etc to the database
-
-    :param username: The one to be used for creating the django account
-    :param password: Min 8 letter/digits
     :param first_name: User's first name
     :param last_name:  User's last name
     :param email: The current email-id used for sending certificates
     :param dob: Date Of birth
     :param college: College of the user (If exists)
+    :param contact_number: contact mobile number of user
 
     """
-    user = UserProfile(first_name=first_name, last_name=last_name, email=email, dob=dob, college=college, contact_number=contact_number)
+    user = UserProfile(first_name=first_name, last_name=last_name, email=email, dob=dob, college=college,
+                       contact_number=contact_number)
     user.save()
     return user
 
@@ -36,7 +36,6 @@ def add_certificate(template, title):
     :param title: Title of certificate.
     :return: Returns the certificate object.
     """
-    #file = zip_to_pdf(template)
     certificate = Certificate(template=template, title=title)
     certificate.save()
     return certificate
@@ -51,8 +50,6 @@ def create_event(event, certificate, creator):
     :param creator: The user who created this event.
     :return: Return the event object.
     """
-    #certificate = Certificate.objects.get(template=certificate)
-    #user = User.objects.get(username=creator)
     event = Event(name=event, certificate=certificate, creator=creator)
     event.save()
     return event
@@ -71,12 +68,10 @@ def organise_event(event, start_date, end_date, organiser, place, participants):
     :return: Returns the object of the organised_event class
     """
     num_days = (end_date-start_date).days
-    #event = Event.objects.get(name=event)
-    #user = User.objects.get(username=organiser)
-    organised_event = OrganisedEvent(event=event, start_date=start_date, end_date=end_date, num_of_days=num_days, organiser=organiser, place=place)
+    organised_event = OrganisedEvent(event=event, start_date=start_date, end_date=end_date, num_of_days=num_days,
+                                     organiser=organiser, place=place)
     organised_event.save()
     for participant in participants:
-        #user = UserProfile.objects.get(email=participant.email)
         organised_event.participants.add(participant)
         organised_event.save()
     return organised_event
@@ -90,7 +85,6 @@ def add_participant(event, participants_email):
     :param participants_email: The list of participants to be added to an event organised.
     :return: Returns the participants's list which are successfull added to the database
     """
-    #event = Event.objects.get(name=event)
     organised_event = OrganisedEvent.objects.get(event=event)
     for participant_email in participants_email:
         user = UserProfile.objects.get(email=participant_email)
@@ -123,14 +117,14 @@ def zip_to_pdf(certificate):
     """
     to be corrected soon!
 
-    :param filename:
+    :param certificate:zip file of certificate latex template
     :return:
     """
 
     file = certificate.template
 
     path = settings.MEDIA_ROOT
-    filename=os.path.basename(file.name)
+    filename = os.path.basename(file.name)
 
     with zipfile.ZipFile(file, "r") as zip_ref:
         zip_ref.extractall(settings.MEDIA_ROOT)
@@ -149,20 +143,6 @@ def zip_to_pdf(certificate):
 
     file = os.path.join(path_folder,folder+".pdf")
     return file
-
-
-def send_certificate(event):
-    """
-    Sends certificates to the users of a particular event.
-
-    :param event: The name of the event.
-    :return: Return the list of user to whom certificate has been sent.
-    """
-    event = Event.objects.get(name=event)
-    organised_event = OrganisedEvent.objects.get(event=event)
-    users = organised_event.participants.all()
-    for user in users:
-        print("Certificate sent to "+user.username)
 
 
 def read_csv(filename):
@@ -204,17 +184,12 @@ def read_csv(filename):
 def generate_qrcode(user, organised_event):
     """
     Generates the qrcode for a given user in an organised event
-
-    :param username: The username of the user.
+    :param user: The firstname of the user.
     :param organised_event: The name of the organised event.
 
     """
-    #user = User.objects.get(username=username)
     user_id = int(user.id)
     hexa1 = hex(user_id).replace('0x', '').zfill(6).upper()
-
-    #event = Event.objects.get(name=organised_event)
-    #organised_event = OrganisedEvent.objects.get(event=organised_event)
     organised_event_id = int(organised_event.id)
     hexa2 = hex(organised_event_id).replace('0x', '').zfill(6).upper()
 
@@ -223,7 +198,7 @@ def generate_qrcode(user, organised_event):
 
     uniqueness = False
     num = 5
-    qrcode=""
+    qrcode = ""
     while not uniqueness:
         present = UserCertificateInfo.objects.filter(qrcode__startswith=serial_key[0:num])
         if not present:
@@ -243,19 +218,27 @@ def generate_qrcode(user, organised_event):
 
 
 def send_email():
-    from_add = "abcd@gmail.com"
-    to_add = "abcd@gmail.com"
+    """
+    Send email using smtp server and localhost in built in python
+    :return: return 1 for success i.e. mail sent.
+    """
+    email = EmailMessage('Certificate', 'Send Certificate', to=['user@gmail.com'])
+    email_obj = email.send()
+    return email_obj
 
-    msg = "hi! msg "
 
-    username = "abcd@gmail.com"
-    password = "abcd"
+def send_certificate(event):
+    """
+    Sends certificates to the users of a particular event.
 
-    server = smtplib.SMTP('smtp.gmail.com', 587, "abcd@gmail.com")
-    server.starttls()
-    server.login(username, password)
-    server.sendmail(from_add, to_add, msg)
-    server.quit()
+    :param event: The name of the event.
+    :return: Return the list of user to whom certificate has been sent.
+    """
+    event = Event.objects.get(name=event)
+    organised_event = OrganisedEvent.objects.get(event=event)
+    users = organised_event.participants.all()
+    for user in users:
+        print("Certificate sent to "+user.username)
 
 
 def check_latex(filename):
@@ -277,11 +260,6 @@ def check_latex(filename):
     file=open(latex_file,'w')
     file.write(content)
     file.close()
-
-
     cmd = ['pdflatex', '-interaction', 'nonstopmode', latex_file]
     proc = subprocess.Popen(cmd)
     proc.communicate()'''
-
-
-

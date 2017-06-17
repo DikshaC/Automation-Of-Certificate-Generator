@@ -21,7 +21,8 @@ def login(request):
         if request.method == "POST":
             form = LoginForm(request.POST)
             if form.is_valid():
-                user = authenticate(request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+                user = authenticate(request, username=form.cleaned_data['username'],
+                                    password=form.cleaned_data['password'])
                 if user is not None:
                     LOGIN(request, user)
                     return redirect('home/')

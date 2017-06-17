@@ -24,7 +24,9 @@
 
     <!-- Navigation -->
     <nav id="mainNav" class="navbar static-top navbar-toggleable-md navbar-inverse bg-inverse">
-        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarExample" aria-controls="navbarExample" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+                data-target="#navbarExample" aria-controls="navbarExample" aria-expanded="false"
+                aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <a class="navbar-brand" href="#">Automation Of Certificate Generator</a>
@@ -97,7 +99,7 @@
                     </form>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="fa fa-fw fa-sign-out"></i> Logout</a>
+                    <a class="nav-link" href="{% url 'logout' %}"><i class="fa fa-fw fa-sign-out"></i> Logout</a>
                 </li>
             </ul>
         </div>
@@ -123,12 +125,12 @@
                                 Users
                             </div>
                         </div>
-                        <a href="#" class="card-footer clearfix small z-1">
+                        <a href="add_user/" class="card-footer clearfix small z-1">
                             <span class="float-left">Add Users</span>
                             <span class="float-right"><i class="fa fa-angle-right"></i></span>
                         </a>
 
-                        <a href="#" class="card-footer clearfix small z-1">
+                        <a href="view_user/" class="card-footer clearfix small z-1">
                             <span class="float-left">View Users</span>
                             <span class="float-right"><i class="fa fa-angle-right"></i></span>
                         </a>
@@ -144,11 +146,11 @@
                                 Certificate
                             </div>
                         </div>
-                        <a href="#" class="card-footer clearfix small z-1">
+                        <a href="add_certificate/" class="card-footer clearfix small z-1">
                             <span class="float-left">Add Certificate</span>
                             <span class="float-right"><i class="fa fa-angle-right"></i></span>
                         </a>
-                        <a href="#" class="card-footer clearfix small z-1">
+                        <a href="view_certificate/" class="card-footer clearfix small z-1">
                             <span class="float-left">View Certificate</span>
                             <span class="float-right"><i class="fa fa-angle-right"></i></span>
                         </a>
@@ -161,15 +163,15 @@
                                 <i class="fa fa-fw fa-list"></i>
                             </div>
                             <div class="mr-5">
-                                Evnets
+                                Events
                             </div>
                         </div>
-                        <a href="#" class="card-footer clearfix small z-1">
+                        <a href="add_event" class="card-footer clearfix small z-1">
                             <span class="float-left">Add Event</span>
                             <span class="float-right"><i class="fa fa-angle-right"></i></span>
                         </a>
 
-                        <a href="#" class="card-footer clearfix small z-1">
+                        <a href="view_event" class="card-footer clearfix small z-1">
                             <span class="float-left">View Events</span>
                             <span class="float-right"><i class="fa fa-angle-right"></i></span>
                         </a>
@@ -185,11 +187,11 @@
                                 Organised Events
                             </div>
                         </div>
-                        <a href="#" class="card-footer clearfix small z-1">
+                        <a href="organise_event/" class="card-footer clearfix small z-1">
                             <span class="float-left">Organise Event</span>
                             <span class="float-right"><i class="fa fa-angle-right"></i></span>
                         </a>
-                        <a href="#" class="card-footer clearfix small z-1">
+                        <a href="view_organised_eventA" class="card-footer clearfix small z-1">
                             <span class="float-left">View Organised Event</span>
                             <span class="float-right"><i class="fa fa-angle-right"></i></span>
                         </a>
