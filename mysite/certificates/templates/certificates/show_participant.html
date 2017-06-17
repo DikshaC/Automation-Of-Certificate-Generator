@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block body %}
+<h4>All Participants in Organised Events:</h4>
+
+{% for participant in participants %}
+    <a href="#"> {{ participant.first_name }}</a><br>
+{% endfor %}
+<button type="button" value="Send" class="btn" onclick="location.href='{% url 'send_email' %}?event={{organised_event.event.name}}'">Send</button>
+{% endblock %}

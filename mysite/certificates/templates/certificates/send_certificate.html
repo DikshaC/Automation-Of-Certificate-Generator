@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block body %}
+<h4>All Organised Events:</h4>
+{% for oe in object_list %}
+    <a href="{% url 'show_participant' %}?event={{oe.event.name}}"> {{ oe.event.name }}</a><br>
+{% endfor %}
+{% endblock %}

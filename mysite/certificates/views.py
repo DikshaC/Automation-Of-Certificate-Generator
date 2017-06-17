@@ -1,11 +1,10 @@
 from __future__ import unicode_literals
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import *
 from .models import *
 from . import functions
-from django.contrib.auth import authenticate, logout ,login as LOGIN
+from django.contrib.auth import authenticate, logout, login as LOGIN
 
 
 @login_required(login_url='/account')
@@ -130,7 +129,30 @@ def view_certificate(request):
 
 
 def send_certificate(request):
-    return redirect(render, 'certificate/send_certificate.html')
+    organised_event = OrganisedEvent.objects.all()
+    context = {"object_list": organised_event}
+    return render(request, 'certificates/send_certificate.html', context)
+
+
+def send_email(request):
+    event_name = request.GET.get('event')
+    event = Event.objects.get(name=event_name)
+    certificate = event.certificate
+    organised_event = OrganisedEvent.objects.get(event=event)
+    participants = organised_event.get_participants()
+    name=participants[0].first_name
+    print(name)
+    functions.send_email(participants, certificate)
+    return redirect('/account/home')
+
+
+def show_participant(request):
+    name = request.GET.get('event')
+    event = Event.objects.get(name=name)
+    organised_event = OrganisedEvent.objects.get(event=event)
+    participants = organised_event.get_participants()
+    context = {"participants": participants, "organised_event": organised_event}
+    return render(request, 'certificates/show_participant.html', context)
 
 
 def add_event(request):

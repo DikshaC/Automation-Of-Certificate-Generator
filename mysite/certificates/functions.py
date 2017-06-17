@@ -115,38 +115,6 @@ def add_user_certificate_info(user, organised_event, user_type):
     return user_info
 
 
-def zip_to_pdf(certificate):
-    """
-    to be corrected soon!
-
-    :param certificate:zip file of certificate latex template
-    :return:
-    """
-
-    file = certificate.template
-
-    path = settings.MEDIA_ROOT
-    filename = os.path.basename(file.name)
-
-    with zipfile.ZipFile(file, "r") as zip_ref:
-        zip_ref.extractall(settings.MEDIA_ROOT)
-
-    folder = filename.split('.')
-    folder = folder[0]
-
-    path_folder = path+folder
-    file = os.path.join(path_folder, folder+".tex")
-
-    os.chdir(path_folder)
-
-    cmd = ['pdflatex', '-interaction', 'nonstopmode', file]
-    proc = subprocess.Popen(cmd)
-    proc.communicate()
-
-    file = os.path.join(path_folder,folder+".pdf")
-    return file
-
-
 def read_csv(filename):
     """
     Reads a csv file to add users in the database for a particular event.
@@ -219,16 +187,6 @@ def generate_qrcode(user, organised_event):
     return qrcode
 
 
-def send_email():
-    """
-    Send email using smtp server and localhost in built in python
-    :return: return 1 for success i.e. mail sent.
-    """
-    email = EmailMessage('Certificate', 'Send Certificate', to=['user@gmail.com'])
-    email_obj = email.send()
-    return email_obj
-
-
 def send_certificate(event):
     """
     Sends certificates to the users of a particular event.
@@ -243,39 +201,81 @@ def send_certificate(event):
         print("Certificate sent to "+user.username)
 
 
-def check_latex(latex_template, first_name):
+def zip_to_pdf(certificate):
     """
-    To be completed soon!
-    :param latex_template:
+    to be corrected soon!
+
+    :param certificate:zip file of certificate latex template
     :return:
     """
 
+    file = certificate.template
+
     path = settings.MEDIA_ROOT
-    latex_file = os.path.join(path, latex_template)
+    filename = os.path.basename(file.name)
+
+    with zipfile.ZipFile(file, "r") as zip_ref:
+        zip_ref.extractall(settings.MEDIA_ROOT)
+
+    folder = filename.split('.')
+    folder = folder[0]
+
+    path_folder = path+folder
+    filename=folder+".tex"
+    return filename, path_folder
 
 
+def send_email(participants, certificate):
+    """
+    Send email using smtp server and localhost in built in python
+    :return: return 1 for success i.e. mail sent.
+    """
+    latex_file, path_folder = zip_to_pdf(certificate)
+
+    for participant in participants:
+        first_name = participant.first_name
+        create_certificate(latex_file, first_name, path_folder)
+        email = EmailMessage('Certificate', 'Send Certificate', to=[participant.email])
+        email_obj = email.send()
+        return email_obj
+
+
+def create_certificate(latex_template, first_name, path_folder):
+    """
+    To be completed soon!
+    :param latex_template: latex template from zip file
+    :param first_name: User's first name
+    :return:
+    """
+    latex_file = os.path.join(path_folder, latex_template)
     file = open(latex_file, "r")
     content = Template(file.read())
     print(file)
     file.close()
 
-    content_tex = content.safe_substitute(name = first_name, title="title")
+    content_tex = content.safe_substitute(name=first_name, title="title")
 
-    user_latex_file= os.path.join(path,first_name + '.tex')
+    user_latex_file= os.path.join(path_folder, first_name + '.tex')
     user_file = open(user_latex_file, 'w+')
 
     user_file.write(content_tex)
     user_file.close()
 
-    os.chdir(path)
+    os.chdir(path_folder)
     cmd = ['pdflatex', '-interaction', 'nonstopmode', user_latex_file]
     proc = subprocess.Popen(cmd)
     proc.communicate()
-    pdf = open(first_name + '.pdf','r')
+    pdf = open(first_name + '.pdf', 'r')
     return pdf
-    #clean_certificate_files(first_name,path)
+
 
 def clean_certificate_files(first_name, path):
+    """
+    clean certificate remove files
+    :param first_name:
+    :param path:
+    :return:
+    """
     os.chdir(path)
     os.remove(first_name + '.pdf', first_name + '.aux', first_name + '.log', first_name + '.tex')
 
