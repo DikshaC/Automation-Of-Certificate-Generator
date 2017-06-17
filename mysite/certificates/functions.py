@@ -4,6 +4,8 @@ import os
 import subprocess
 import smtplib
 from datetime import datetime
+from string import Template
+
 from .models import *
 from django.contrib.auth.models import User
 import zipfile
@@ -258,30 +260,42 @@ def send_email():
     server.quit()
 
 
-def check_latex(filename):
+def check_latex(latex_template, first_name):
     """
     To be completed soon!
-    :param filename:
+    :param latex_template:
     :return:
     """
+
     path = settings.MEDIA_ROOT
-    latex_file = os.path.join(path, filename)
-    os.chdir(path)
+    latex_file = os.path.join(path, latex_template)
+
 
     file = open(latex_file, "r")
-    content = file.read()
-    print(content)
-    '''content = content % {'person': 'Diksha'}
+    content = Template(file.read())
+    print(file)
     file.close()
 
-    file=open(latex_file,'w')
-    file.write(content)
-    file.close()
+    content_tex = content.safe_substitute(name = first_name, title="title")
 
+    user_latex_file= os.path.join(path,first_name + '.tex')
+    user_file = open(user_latex_file, 'w+')
 
-    cmd = ['pdflatex', '-interaction', 'nonstopmode', latex_file]
+    user_file.write(content_tex)
+    user_file.close()
+
+    os.chdir(path)
+    cmd = ['pdflatex', '-interaction', 'nonstopmode', user_latex_file]
     proc = subprocess.Popen(cmd)
-    proc.communicate()'''
+    proc.communicate()
+    pdf = open(first_name + '.pdf','r')
+    return pdf
+    #clean_certificate_files(first_name,path)
+
+def clean_certificate_files(first_name, path):
+    os.chdir(path)
+    os.remove(first_name + '.pdf', first_name + '.aux', first_name + '.log', first_name + '.tex')
+
 
 
 
