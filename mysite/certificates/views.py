@@ -56,6 +56,11 @@ def register(request):
         return render(request, "certificates/register.html", {'form': form})
 
 
+def profile(request):
+    user = User.objects.get(username=request.user)
+
+
+
 def add_user_profile(request):
     if request.method == "POST":
         form = UserProfileForm(request.POST)
@@ -140,7 +145,7 @@ def send_email(request):
     certificate = event.certificate
     organised_event = OrganisedEvent.objects.get(event=event)
     participants = organised_event.get_participants()
-    name=participants[0].first_name
+    name = participants[0].first_name
     print(name)
     functions.send_email(participants, certificate)
     return redirect('/account/home')

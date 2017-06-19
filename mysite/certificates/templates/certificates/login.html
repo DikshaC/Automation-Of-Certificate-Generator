@@ -2,13 +2,14 @@
 {% block title %}Login{% endblock %}
 {% block body %}
     {% load material_form %}
-    <h4>Login Form</h4>
-        <form method="POST">
+    <h4 align="center">Login Form</h4>
+    <div align="center">
+        <form method="POST" style="border:solid 3px;width:500px">
             {% csrf_token %}
             {% form form=form %} {% endform %}
             <button type="submit" class="btn btn primary" >Login</button><br><br>
             <b>Not a member?Register</b>
             <button type="button"  class="btn" onclick="location.href='{% url 'register' %}'">Register</button>
         </form>
-
+    </div>
 {% endblock %}
