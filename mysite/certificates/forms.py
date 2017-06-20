@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.safestring import mark_safe
 from material import Layout, Row, Fieldset, Column
 from django.forms import ModelForm, SelectDateWidget, widgets
 from .models import *
@@ -59,4 +60,5 @@ class UserCertificateInfoForm(forms.ModelForm):
 
 
 class VerificationForm(forms.Form):
-    qrcode = forms.CharField()
+    qrcode = forms.CharField(label=mark_safe("<strong>QR Code</strong>"))
+

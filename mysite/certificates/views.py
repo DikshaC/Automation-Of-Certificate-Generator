@@ -73,7 +73,7 @@ def profile(request):
             return redirect('/account/home')
     else:
         form = UserForm(initial={'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email,
-                                        'username': user.username})
+                                 'username': user.username})
         return render(request, 'certificates/add_modelform.html', {'form': form})
 
 
@@ -119,9 +119,10 @@ def view_user_profile(request):
 
 def add_certificate(request):
     if request.method == "POST":
-        form = CertificateForm(request.POST)
+        form = CertificateForm(request.POST, request.FILES)
         if form.is_valid():
-            functions.add_certificate(form.cleaned_data['template'], form.cleaned_data['title'])
+            file = request.FILES['template']
+            functions.add_certificate(file, form.cleaned_data['title'])
             return redirect('/account/home')
     else:
         form = CertificateForm()
@@ -260,14 +261,14 @@ def verify(request):
         if form.is_valid():
             qrcode = form.cleaned_data['qrcode']
             user_info = UserCertificateInfo.objects.get(qrcode=qrcode)
-            user =  user_info.user
-            context = {'user': user}
-            return render(request,'certificates/verify_user.html', context)
+            user = user_info.user
+            context = {'user': user, 'organised_event': user_info.organised_event}
+            return render(request, 'certificates/verify_user.html', context)
         else:
-            return render(request, "certificates/add_modelform.html", {'form': form})
+            return render(request, "certificates/verify.html", {'form': form})
     else:
         form = VerificationForm()
-        return render(request, "certificates/add_modelform.html", {'form': form})
+        return render(request, "certificates/verify.html", {'form': form})
 
 
 def preview(request):
