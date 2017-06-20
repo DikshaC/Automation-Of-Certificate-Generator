@@ -110,6 +110,11 @@
     </nav>
 
     <div class="content-wrapper py-3">
+        <div class="container-fluid">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/account/home">Home</a></li>
+                <li class="breadcrumb-item active">My Home</li>
+            </ol>
 
 {% block body %}
 <h4>All Organised Events:</h4>
@@ -118,7 +123,7 @@
 {% endfor %}
 {% endblock %}
 </div>
-
+    </div>
     <!-- /.content-wrapper -->
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fa fa-chevron-up"></i>

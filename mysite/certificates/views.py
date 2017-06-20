@@ -60,7 +60,6 @@ def profile(request):
     user = User.objects.get(username=request.user)
 
 
-
 def add_user_profile(request):
     if request.method == "POST":
         form = UserProfileForm(request.POST)

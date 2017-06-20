@@ -110,16 +110,24 @@
     </nav>
 
     <div class="content-wrapper py-3">
+         <div class="container-fluid">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/account/home">Home</a></li>
+                <li class="breadcrumb-item active">My Home</li>
+            </ol>
     {% block body %}
     <div align="center">
         <form method="POST" style="border:solid 3px;width:500px">
             {% csrf_token %}
-            {{ form.as_p }}
+            <table>
+            {{ form.as_table}}
+                </table>
             <button type="submit" class="btn btn primary">Submit</button>
         </form>
     </div>
     {% endblock %}
-</div>
+         </div>
+    </div>
 
     <!-- /.content-wrapper -->
     <a class="scroll-to-top rounded" href="#page-top">
