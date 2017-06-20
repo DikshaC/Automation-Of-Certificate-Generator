@@ -1,6 +1,30 @@
-{% block body %}
-<h4>Verify User:</h4>
-    First Name:{{ user.first_name }} <br>
-    Last Name:{{ user.last_name }}
-{% endblock %}
+{% load static %}
+<html>
+<head>
+    <Title> Verify QR Code</Title>
+<link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+</head>
+<body>
+ {% block body %}
+<div align="center"><br>
+    <h1> Certificate Verification </h1>
+   <b> Participation Details</b>
+    <div class="table-responsive">
+    <table  border="1px solid black" class="table table-bordered"  style="width:50%">
+        <thread>
+            <tr><th>Name </th><td>{{user.first_name}} {{user.last_name}}</td></tr>
+            <tr><th>Event </th><td>{{organised_event.event.name}}</td></tr>
+            <tr><th>From </th><td>{{organised_event.start_date}}</td></tr>
+            <tr><th>To </th><td>{{organised_event.end_date}}</td>
+            <tr><th>Days </th><td>{{organised_event.num_of_days}}</td></tr>
+
+    </thread>
+    </table>
+    </div>
+    <a href="{% url 'verify' %}">Back</a>
 </div>
+{% endblock %}
+
+</body>
+</html>
+

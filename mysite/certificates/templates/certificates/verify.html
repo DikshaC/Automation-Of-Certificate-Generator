@@ -1,10 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
+{% load static %}
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
+    <Title> Verify QR  Code</Title>
+<link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
 </head>
 <body>
-$END$
+ {% block body %}
+<div align="center"><br>
+    <h1> Certificate Verification </h1>
+    <p><b> Enter the alphanumeric characters below the QR code<br>
+        OR <br>Enter the serial number you received while scanning the QR code on certificate</b></p>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Verify</button><br>
+
+    </form>
+</div>
+{% endblock %}
 </body>
 </html>
+

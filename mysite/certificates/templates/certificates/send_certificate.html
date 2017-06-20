@@ -91,16 +91,9 @@
 
 
             </ul>
-            <ul class="navbar-nav ml-auto">
-				<li class="nav-item">
-                    <form class="form-inline my-2 my-lg-0 mr-lg-2">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search for...">
-                            <span class="input-group-btn">
-                        <button class="btn btn-primary" type="button"><i class="fa fa-search"></i></button>
-                    </span>
-                        </div>
-                    </form>
+             <ul class="navbar-nav ml-auto">
+                 <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}"><i class="fa fa-fw fa-sign-in"></i> Home</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}"><i class="fa fa-fw fa-sign-out"></i> Logout</a>
@@ -110,13 +103,18 @@
     </nav>
 
     <div class="content-wrapper py-3">
+        <div class="container-fluid">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item active">My Home</li>
+            </ol>
     {% block body %}
 <h4>All Organised Events:</h4>
 {% for oe in object_list %}
     <a href="{% url 'show_participant' %}?event={{oe.event.name}}"> {{ oe.event.name }}</a><br>
 {% endfor %}
 {% endblock %}
-</div>
+        </div></div>
 
     <!-- /.content-wrapper -->
     <a class="scroll-to-top rounded" href="#page-top">

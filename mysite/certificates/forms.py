@@ -3,6 +3,7 @@ from django.utils.safestring import mark_safe
 from material import Layout, Row, Fieldset, Column
 from django.forms import ModelForm, SelectDateWidget, widgets
 from .models import *
+from django.conf import settings
 
 
 class LoginForm(forms.Form):
@@ -62,3 +63,7 @@ class UserCertificateInfoForm(forms.ModelForm):
 class VerificationForm(forms.Form):
     qrcode = forms.CharField(label=mark_safe("<strong>QR Code</strong>"))
 
+
+
+class AddUserForm(forms.Form):
+    csvFile=forms.FileField()

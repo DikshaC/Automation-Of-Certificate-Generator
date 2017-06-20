@@ -92,15 +92,8 @@
 
             </ul>
             <ul class="navbar-nav ml-auto">
-				<li class="nav-item">
-                    <form class="form-inline my-2 my-lg-0 mr-lg-2">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search for...">
-                            <span class="input-group-btn">
-                        <button class="btn btn-primary" type="button"><i class="fa fa-search"></i></button>
-                    </span>
-                        </div>
-                    </form>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}"><i class="fa fa-fw fa-sign-in"></i> Home</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}"><i class="fa fa-fw fa-sign-out"></i> Logout</a>
@@ -112,7 +105,7 @@
     <div class="content-wrapper py-3">
         <div class="container-fluid">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/account/home">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
                 <li class="breadcrumb-item active">My Home</li>
             </ol>
     {% block body %}
