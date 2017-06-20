@@ -1,5 +1,9 @@
 from __future__ import unicode_literals
+
+import os
+
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .forms import *
 from .models import *
@@ -54,6 +58,23 @@ def register(request):
     else:
         form = RegistrationForm()
         return render(request, "certificates/register.html", {'form': form})
+
+
+def profile(request):
+    user = request.user
+    if request.method == "POST":
+        form = UserForm(request.POST)
+        if form.is_valid():
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            user.username = form.cleaned_data['username']
+            user.email = form.cleaned_data['email']
+            user.save()
+            return redirect('/account/home')
+    else:
+        form = UserForm(initial={'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email,
+                                        'username': user.username})
+        return render(request, 'certificates/add_modelform.html', {'form': form})
 
 
 def add_user_profile(request):
@@ -142,7 +163,7 @@ def send_email(request):
     participants = organised_event.get_participants()
     name=participants[0].first_name
     print(name)
-    functions.send_email(participants, certificate)
+    functions.send_email(participants, certificate, event)
     return redirect('/account/home')
 
 
@@ -231,3 +252,35 @@ def view_organised_event(request):
     organised_event = OrganisedEvent.objects.all()
     context = {"object_list": organised_event}
     return render(request, 'certificates/view_organised_event.html', context)
+
+
+def verify(request):
+    if request.method == "POST":
+        form = VerificationForm(request.POST)
+        if form.is_valid():
+            qrcode = form.cleaned_data['qrcode']
+            user_info = UserCertificateInfo.objects.get(qrcode=qrcode)
+            user =  user_info.user
+            context = {'user': user}
+            return render(request,'certificates/verify_user.html', context)
+        else:
+            return render(request, "certificates/add_modelform.html", {'form': form})
+    else:
+        form = VerificationForm()
+        return render(request, "certificates/add_modelform.html", {'form': form})
+
+
+def preview(request):
+    title = request.GET.get('title')
+    certificate =  Certificate.objects.get(title=title)
+    event = Event.objects.get(certificate=certificate)
+    filename,path_folder = functions.unzip_folder(certificate)
+    participant = UserProfile.objects.get(first_name="Aditi")
+    pdf_filename = functions.create_certificate(filename,participant,path_folder,event)
+
+    path_file = os.path.join(path_folder, pdf_filename)
+
+    with open(path_file, 'rb') as pdf:
+        response = HttpResponse(pdf.read(), content_type='application/pdf')
+        response['Content-Disposition'] = pdf_filename
+        return response
