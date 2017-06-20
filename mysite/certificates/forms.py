@@ -23,6 +23,11 @@ class RegistrationForm(forms.Form):
                              Row('first_name', 'last_name')))
 
 
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name']
+
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
@@ -48,6 +53,10 @@ class OrganisedEventForm(forms.ModelForm):
 
 
 class UserCertificateInfoForm(forms.ModelForm):
-        class Meta:
-            model = UserCertificateInfo
-            fields = ['user', 'organised_event', 'qrcode', 'user_type']
+    class Meta:
+        model = UserCertificateInfo
+        fields = ['user', 'organised_event', 'qrcode', 'user_type']
+
+
+class VerificationForm(forms.Form):
+    qrcode = forms.CharField()

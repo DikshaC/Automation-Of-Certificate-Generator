@@ -6,5 +6,4 @@ from material.frontend import urls as frontend_urls
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^account/', include('certificates.urls')),
-    
 ]

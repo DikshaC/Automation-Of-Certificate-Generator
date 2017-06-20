@@ -201,11 +201,9 @@ def send_certificate(event):
         print("Certificate sent to "+user.username)
 
 
-def zip_to_pdf(certificate):
+def unzip_folder(certificate):
     """
-    to be corrected soon!
-
-    :param certificate:zip file of certificate latex template
+    :param certificate:
     :return:
     """
 
@@ -225,39 +223,46 @@ def zip_to_pdf(certificate):
     return filename, path_folder
 
 
-def send_email(participants, certificate):
+def send_email(participants, certificate, event):
     """
     Send email using smtp server and localhost in built in python
     :return: return 1 for success i.e. mail sent.
     """
-    latex_file, path_folder = zip_to_pdf(certificate)
+    latex_file, path_folder = unzip_folder(certificate)
 
     for participant in participants:
-        first_name = participant.first_name
-        create_certificate(latex_file, first_name, path_folder)
+        participant = participant
+        create_certificate(latex_file, participant, path_folder, event)
         email = EmailMessage('Certificate', 'Send Certificate', to=[participant.email])
         email_obj = email.send()
         return email_obj
 
 
-def create_certificate(latex_template, first_name, path_folder):
+def create_certificate(latex_template, participant, path_folder, event):
     """
-    To be completed soon!
-    :param latex_template: latex template from zip file
-    :param first_name: User's first name
+
+    :param latex_template:
+    :param participant:
+    :param path_folder:
+    :param event:
     :return:
     """
+
+    organised_event = OrganisedEvent.objects.get(event=event)
+    qrcode = generate_qrcode(participant,organised_event)
+    user_info = UserCertificateInfo.objects.get(user=participant,organised_event=organised_event)
+
     latex_file = os.path.join(path_folder, latex_template)
     file = open(latex_file, "r")
     content = Template(file.read())
     print(file)
     file.close()
 
-    content_tex = content.safe_substitute(name=first_name, title="title")
+    content_tex = content.safe_substitute(name=participant.first_name+" "+participant.last_name,eventName=event.name,qrcode=qrcode,start_date=organised_event.start_date,
+                                          end_date=organised_event.end_date,num_days=organised_event.num_of_days,user_type=user_info.user_type)
 
-    user_latex_file= os.path.join(path_folder, first_name + '.tex')
+    user_latex_file = os.path.join(path_folder, participant.first_name + '.tex')
     user_file = open(user_latex_file, 'w+')
-
     user_file.write(content_tex)
     user_file.close()
 
@@ -265,9 +270,26 @@ def create_certificate(latex_template, first_name, path_folder):
     cmd = ['pdflatex', '-interaction', 'nonstopmode', user_latex_file]
     proc = subprocess.Popen(cmd)
     proc.communicate()
-    pdf = open(first_name + '.pdf', 'r')
-    return pdf
+    return participant.first_name + '.pdf'
 
+
+def read_certificate_attributes(path_folder):
+    # taking attributes from csv file
+
+
+    attribute_filename = "certificate_attributes.csv"
+    attribute_file = os.path.join(path_folder, attribute_filename)
+    file=open(attribute_file,'r')
+    attributes=[]
+    try:
+        reader = csv.reader(file)
+        for row in reader:
+            attributes=row
+    finally:
+        file.close()
+
+    print(attributes)
+    return attributes
 
 def clean_certificate_files(first_name, path):
     """
