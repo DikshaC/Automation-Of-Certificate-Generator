@@ -150,7 +150,7 @@ def read_csv(file):
 def generate_qrcode(user, organised_event):
     """
     Generates the qrcode for a given user in an organised event
-    :param user: The firstname of the user.
+    :param user: The first name of the user.
     :param organised_event: The name of the organised event.
     :return: Returns the qrcode of the user
     """

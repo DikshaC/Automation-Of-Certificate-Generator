@@ -175,7 +175,7 @@ def send_email(request):
     certificate = event.certificate
     organised_event = OrganisedEvent.objects.get(event=event)
     participants = organised_event.get_participants()
-    name=participants[0].first_name
+    name = participants[0].first_name
     print(name)
     functions.send_email(participants, certificate, event)
     return redirect('/account/home')
