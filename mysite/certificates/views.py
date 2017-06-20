@@ -71,6 +71,8 @@ def profile(request):
             user.email = form.cleaned_data['email']
             user.save()
             return redirect('/account/home')
+        else:
+            return render(request, 'certificates/add_modelform.html', {'form': form})
     else:
         form = UserForm(initial={'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email,
                                         'username': user.username})
@@ -78,6 +80,18 @@ def profile(request):
 
 
 def add_user_profile(request):
+    if request.method == "POST":
+        form = AddUserForm(request.POST,request.FILES)
+        if form.is_valid():
+            csv=request.FILES['csvFile']
+            functions.read_csv(csv)
+            return redirect('/account/home')
+    else:
+        form = AddUserForm()
+        return render(request, "certificates/add_modelform.html", {'form': form})
+
+
+'''def add_user_profile(request):
     if request.method == "POST":
         form = UserProfileForm(request.POST)
         if form.is_valid():
@@ -87,8 +101,7 @@ def add_user_profile(request):
             return redirect('/account/home')
     else:
         form = UserProfileForm()
-        return render(request, "certificates/add_modelform.html", {'form': form})
-
+        return render(request, "certificates/add_modelform.html", {'form': form})'''
 
 def edit_user_profile(request):
     email = request.GET.get('email')
@@ -119,9 +132,10 @@ def view_user_profile(request):
 
 def add_certificate(request):
     if request.method == "POST":
-        form = CertificateForm(request.POST)
+        form = CertificateForm(request.POST,request.FILES)
         if form.is_valid():
-            functions.add_certificate(form.cleaned_data['template'], form.cleaned_data['title'])
+            file=request.FILES['template']
+            functions.add_certificate(file, form.cleaned_data['title'])
             return redirect('/account/home')
     else:
         form = CertificateForm()

@@ -2,13 +2,9 @@ import csv
 import hashlib
 import os
 import subprocess
-import smtplib
-from datetime import datetime
 from django.core.mail import EmailMessage
 from string import Template
-
 from .models import *
-from django.contrib.auth.models import User
 import zipfile
 from django.conf import settings
 
@@ -50,7 +46,7 @@ def create_event(event, certificate, creator):
     :param event: The name of the event.
     :param certificate: The certificate class's object.
     :param creator: The user who created this event.
-    :return: Return the event object.
+    :return: Returns the event object.
     """
     event = Event(name=event, certificate=certificate, creator=creator)
     event.save()
@@ -85,7 +81,7 @@ def add_participant(event, participants_email):
 
     :param event: The organised event name in which participants are to be added
     :param participants_email: The list of participants to be added to an event organised.
-    :return: Returns the participants's list which are successfull added to the database
+    :return: Returns the participants's list which are successfully added to the database
     """
     organised_event = OrganisedEvent.objects.get(event=event)
     for participant_email in participants_email:
@@ -103,7 +99,7 @@ def add_user_certificate_info(user, organised_event, user_type):
     :param user: User class object.
     :param organised_event: The event object.
     :param user_type: The list of roles played by the user in that event.
-    :return:
+    :return: Returns the UserCertificateInfo object
     """
 
     user_info = UserCertificateInfo(user=user, organised_event=organised_event)
@@ -115,16 +111,16 @@ def add_user_certificate_info(user, organised_event, user_type):
     return user_info
 
 
-def read_csv(filename):
+def read_csv(file):
     """
     Reads a csv file to add users in the database for a particular event.
 
     :param filename: The name of the .csv file
-            Format (Without spaces in between): first_name,last_name,username,password,email,type,DOB,college
-    :return: Returns the first name of the user as a confirmation
+            Format (Without spaces in between): first_name,last_name,username,password,email,user_type(s)[separated by ',' if more than 1 type ],DOB,college
+    :return: Returns nothing
     """
     path = settings.MEDIA_ROOT
-    file = os.path.join(path, filename)
+    #file = os.path.join(path, filename)
 
     file1 = open(file, "r")
     first_line = file1.readline().strip()
@@ -156,7 +152,7 @@ def generate_qrcode(user, organised_event):
     Generates the qrcode for a given user in an organised event
     :param user: The firstname of the user.
     :param organised_event: The name of the organised event.
-
+    :return: Returns the qrcode of the user
     """
     user_id = int(user.id)
     hexa1 = hex(user_id).replace('0x', '').zfill(6).upper()
@@ -187,20 +183,6 @@ def generate_qrcode(user, organised_event):
     return qrcode
 
 
-def send_certificate(event):
-    """
-    Sends certificates to the users of a particular event.
-
-    :param event: The name of the event.
-    :return: Return the list of user to whom certificate has been sent.
-    """
-    event = Event.objects.get(name=event)
-    organised_event = OrganisedEvent.objects.get(event=event)
-    users = organised_event.participants.all()
-    for user in users:
-        print("Certificate sent to "+user.username)
-
-
 def unzip_folder(certificate):
     """
     :param certificate:
@@ -225,8 +207,12 @@ def unzip_folder(certificate):
 
 def send_email(participants, certificate, event):
     """
-    Send email using smtp server and localhost in built in python
-    :return: return 1 for success i.e. mail sent.
+    Sends email to the participants of a particular organised event.
+
+    :param participants: List of participants to whom certificate will be sent
+    :param certificate: The certificate object whose template has to be used to send certificates
+    :param event: The event object whose certificate has to be sent.
+    :return: None
     """
     latex_file, path_folder = unzip_folder(certificate)
 
@@ -235,17 +221,19 @@ def send_email(participants, certificate, event):
         create_certificate(latex_file, participant, path_folder, event)
         email = EmailMessage('Certificate', 'Send Certificate', to=[participant.email])
         email_obj = email.send()
-        return email_obj
+        clean_certificate_files(participant.name, path_folder)
+
 
 
 def create_certificate(latex_template, participant, path_folder, event):
     """
+    Creates the certificate from latex template and returns the name of the certificate.
 
-    :param latex_template:
-    :param participant:
-    :param path_folder:
-    :param event:
-    :return:
+    :param latex_template:The latex file (.tex) which has to converted to pdf
+    :param participant: The participant whose certificate has to be created
+    :param path_folder: The path of the folder containing latex file (.tex)
+    :param event: The event whose certificate has to be created for the participant
+    :return: Returns the name of the pdf file : Default: (Name of the participant).pdf
     """
 
     organised_event = OrganisedEvent.objects.get(event=event)
@@ -273,34 +261,12 @@ def create_certificate(latex_template, participant, path_folder, event):
     return participant.first_name + '.pdf'
 
 
-def read_certificate_attributes(path_folder):
-    # taking attributes from csv file
-
-
-    attribute_filename = "certificate_attributes.csv"
-    attribute_file = os.path.join(path_folder, attribute_filename)
-    file=open(attribute_file,'r')
-    attributes=[]
-    try:
-        reader = csv.reader(file)
-        for row in reader:
-            attributes=row
-    finally:
-        file.close()
-
-    print(attributes)
-    return attributes
-
 def clean_certificate_files(first_name, path):
     """
-    clean certificate remove files
-    :param first_name:
-    :param path:
-    :return:
+    Clears the unwanted files after pdf is generated from latex.
+    :param first_name:The name of the participant (as all the files are created with participant's name)
+    :param path: The path of the folder where pdf has created(or tex file is stored)
+    :return: Returns none
     """
     os.chdir(path)
     os.remove(first_name + '.pdf', first_name + '.aux', first_name + '.log', first_name + '.tex')
-
-
-
-
