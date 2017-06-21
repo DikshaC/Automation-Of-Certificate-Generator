@@ -111,14 +111,14 @@
             </ol>
             {% block body %}
         </div>
-        <div class="container-fluid">
+        <div class="container-fluid" style="height:570px">
             <div align="center">
-                <form method="POST" style="border:solid 3px;width:500px" enctype="multipart/form-data">
+                <form method="POST"  enctype="multipart/form-data">
                     {% csrf_token %}
-                    <table>
-                        {{ form.as_table}}
+                    <table  border="2px solid black" class="table table-bordered"  style="width:60%">
+                      {{ form.as_table}}
                     </table>
-                    <button type="submit" class="btn btn primary">Submit</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>
             {% endblock %}
@@ -141,7 +141,7 @@
     <script src="{% static 'vendor/datatables/dataTables.bootstrap4.js' %}"></script>
 
     <!-- Custom scripts for this template -->
-    <script src="js/sb-admin.min.js"></script>
+    <script src="{% static 'js/sb-admin.min.js' %}"></script>
 
 
 
