@@ -110,10 +110,11 @@
             </ol>
 
 {% block body %}
-<h4>All Organised Events:</h4>
+<h4>Organised Events List:</h4>
+              <ul style="list-style-type:square">
 {% for oe in object_list %}
-    <a href="{% url 'edit_organised_event' %}?event={{oe.event.name}}"> {{ oe.event.name }}</a><br>
-{% endfor %}
+                  <li><a href="{% url 'edit_organised_event' %}?event={{oe.event.name}}" style="text-decoration:none;font-size:20px"> {{ oe.event.name }}</a></li><br>
+                  {% endfor %}</ul>
 {% endblock %}
 </div>
     </div>

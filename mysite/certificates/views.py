@@ -124,13 +124,20 @@ def edit_user_profile(request):
         form = UserProfileForm(initial={'first_name': user.first_name, 'last_name': user.last_name, 'email': email,
                                         'dob': user.dob, 'college': user.college,
                                         'contact_number': user.contact_number})
-        return render(request, 'certificates/add_modelform.html', {'form': form})
+        context = {'user': user, 'form': form, 'type': "user_profile"}
+        return render(request, 'certificates/edit_modelform.html', context)
 
 
 def view_user_profile(request):
     user = UserProfile.objects.all()
     context = {"object_list": user}
     return render(request, 'certificates/view_user.html', context)
+
+
+def delete_user_profile(request):
+    email = request.GET.get('email')
+    UserProfile.objects.get(email=email).delete()
+    return redirect('view_user_profile')
 
 
 def add_certificate(request):
@@ -157,13 +164,20 @@ def edit_certificate(request):
             return redirect('/account/home')
     else:
         form = CertificateForm(initial={'title': title, 'template': certificate.template})
-        return render(request, 'certificates/add_modelform.html', {'form': form})
+        context = {'certificate': certificate, 'form': form, 'type': "certificate"}
+        return render(request, 'certificates/edit_modelform.html', context)
 
 
 def view_certificate(request):
     certificate = Certificate.objects.all()
     context = {"object_list": certificate}
     return render(request, 'certificates/view_certificate.html', context)
+
+
+def delete_certificate(request):
+    title = request.GET.get('title')
+    Certificate.objects.get(title=title).delete()
+    return redirect('view_certificate')
 
 
 def send_certificate(request):
@@ -220,7 +234,8 @@ def edit_event(request):
             return redirect('/account/home')
     else:
         form = EventForm(initial={'name': name, 'certificate': event.certificate, 'creator': event.creator})
-        return render(request, 'certificates/edit_modelform.html', {'form': form})
+        context = {'event': event, 'form': form, 'type': "event"}
+        return render(request, 'certificates/edit_modelform.html', context)
 
 
 def view_event(request):
@@ -269,13 +284,21 @@ def edit_organised_event(request):
                                            'organiser': organised_event.organiser, 'place': organised_event.place,
                                            'participants':
                                                [participant.pk for participant in organised_event.get_participants()]})
-        return render(request, 'certificates/add_modelform.html', {'form': form})
+        context = {'organised_event': organised_event, 'form': form, 'type': "organised_event"}
+        return render(request, 'certificates/edit_modelform.html', context)
 
 
 def view_organised_event(request):
     organised_event = OrganisedEvent.objects.all()
     context = {"object_list": organised_event}
     return render(request, 'certificates/view_organised_event.html', context)
+
+
+def delete_organised_event(request):
+    name = request.GET.get('event')
+    event = Event.objects.get(name=name)
+    OrganisedEvent.objects.get(event=event).delete()
+    return redirect('view_Organised_event')
 
 
 def verify(request):

@@ -109,10 +109,11 @@
                 <li class="breadcrumb-item active">My Home</li>
             </ol>
         {% block body %}
-<h4>All Users:</h4>
+<h4>Participant Users Lisr:</h4>
+              <ul style="list-style-type:square">
 {% for u in object_list %}
-    <a href="{% url 'edit_user' %}?email={{u.email}}"> {{ u.first_name }}</a><br>
-{% endfor %}
+                  <li> <a href="{% url 'edit_user' %}?email={{u.email}}" style="text-decoration:none;font-size:20px"> {{ u.first_name }}</a></li><br>
+                  {% endfor %}</ul>
 {% endblock %}
 </div>
     </div>

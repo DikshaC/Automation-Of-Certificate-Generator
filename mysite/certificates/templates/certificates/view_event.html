@@ -109,13 +109,12 @@
                 <li class="breadcrumb-item active">My Home</li>
             </ol>
     {% block body %}
-            <div align="center" class="table-responsive">
-                <h4>All Events:</h4>
-                <table  border="1px solid black" class="table table-bordered"  style="width:50%">
+               <h4> Events List:</h4>
+            <ul style="list-style-type:square">
                     {% for event in object_list %}
-                        <a href="{% url 'edit_event' %}?name={{event.name}}"> {{ event.name }}</a><br>
-                    {% endfor %}
-                </table>
+                        <li>  <a href="{% url 'edit_event' %}?name={{event.name}}" style="text-decoration:none;font-size:20px"> {{ event.name }}</a></li><br>
+                  {% endfor %}
+            </ul>
     {% endblock %}
     </div>
     </div>

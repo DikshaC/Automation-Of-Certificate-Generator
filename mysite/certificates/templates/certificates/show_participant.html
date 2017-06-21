@@ -109,11 +109,12 @@
                 <li class="breadcrumb-item active">My Home</li>
             </ol>
     {% block body %}
-    <h4>All Participants in Organised Events:</h4>
+    <h4> List of Participants in Organised Events:</h4>
+            <ul style="list-style-type:square">
     {% for participant in participants %}
-     <a href="#"> {{ participant.first_name }}</a><br>
-    {% endfor %}
-    <button type="button" value="Send" class="btn btn-primary" onclick="location.href='{% url 'send_email' %}?event={{organised_event.event.name}}'">Send</button>
+                <li> <a href="#"> {{ participant.first_name }}</a></li><br>
+        {% endfor %}</ul>
+    <button type="button" value="Send" class="btn btn-primary" onclick="location.href='{% url 'send_email' %}?event={{organised_event.event.name}}'" style="text-decoration:none;font-size:20px">Send</button>
     {% endblock %}
     </div>
     </div>
