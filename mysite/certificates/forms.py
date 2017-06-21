@@ -64,6 +64,5 @@ class VerificationForm(forms.Form):
     qrcode = forms.CharField(label=mark_safe("<strong>QR Code</strong>"))
 
 
-
 class AddUserForm(forms.Form):
     csvFile=forms.FileField()

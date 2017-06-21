@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^home/add_event/$', views.add_event, name="add_event"),
     url(r'^home/edit_event/$', views.edit_event, name="edit_event"),
     url(r'^home/view_event/$', views.view_event, name="view_event"),
+    url(r'^home/delete_event/$', views.delete_event, name="delete_event"),
     url(r'^home/organise_event/$', views.organise_event, name="organise_event"),
     url(r'^home/edit_organised_event/$', views.edit_organised_event, name="edit_organised_event"),
     url(r'^home/view_organised_event/$', views.view_organised_event, name="view_organised_event"),

@@ -103,7 +103,7 @@
     </nav>
 
     <div class="content-wrapper py-3">
-        <div class="container-fluid">
+        <div class="container-fluid" style="height:600px">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
                 <li class="breadcrumb-item active">My Home</li>
@@ -113,7 +113,7 @@
     {% for participant in participants %}
      <a href="#"> {{ participant.first_name }}</a><br>
     {% endfor %}
-    <button type="button" value="Send" class="btn" onclick="location.href='{% url 'send_email' %}?event={{organised_event.event.name}}'">Send</button>
+    <button type="button" value="Send" class="btn btn-primary" onclick="location.href='{% url 'send_email' %}?event={{organised_event.event.name}}'">Send</button>
     {% endblock %}
     </div>
     </div>
@@ -133,7 +133,7 @@
     <script src="{% static 'vendor/datatables/dataTables.bootstrap4.js' %}"></script>
 
     <!-- Custom scripts for this template -->
-    <script src="js/sb-admin.min.js"></script>
+    <script src="{% static 'js/sb-admin.min.js' %}"></script>
 
 
 

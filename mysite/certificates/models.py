@@ -57,8 +57,8 @@ class Event(models.Model):
 
 class OrganisedEvent(models.Model):
     event = models.ForeignKey(Event)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    start_date = models.DateField()
+    end_date = models.DateField()
     num_of_days = models.IntegerField()
     participants = models.ManyToManyField(UserProfile, blank=True, related_name="participants")
     organiser = models.ForeignKey(User, related_name="organiser")

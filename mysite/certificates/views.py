@@ -81,9 +81,9 @@ def profile(request):
 
 def add_user_profile(request):
     if request.method == "POST":
-        form = AddUserForm(request.POST,request.FILES)
+        form = AddUserForm(request.POST, request.FILES)
         if form.is_valid():
-            csv=request.FILES['csvFile']
+            csv = request.FILES['csvFile']
             functions.read_csv(csv)
             return redirect('/account/home')
     else:
@@ -102,6 +102,7 @@ def add_user_profile(request):
     else:
         form = UserProfileForm()
         return render(request, "certificates/add_modelform.html", {'form': form})'''
+
 
 def edit_user_profile(request):
     email = request.GET.get('email')
@@ -132,9 +133,9 @@ def view_user_profile(request):
 
 def add_certificate(request):
     if request.method == "POST":
-        form = CertificateForm(request.POST,request.FILES)
+        form = CertificateForm(request.POST, request.FILES)
         if form.is_valid():
-            file=request.FILES['template']
+            file = request.FILES['template']
             functions.add_certificate(file, form.cleaned_data['title'])
             return redirect('/account/home')
     else:
@@ -217,13 +218,19 @@ def edit_event(request):
             return redirect('/account/home')
     else:
         form = EventForm(initial={'name': name, 'certificate': event.certificate, 'creator': event.creator})
-        return render(request, 'certificates/add_modelform.html', {'form': form})
+        return render(request, 'certificates/edit_modelform.html', {'form': form})
 
 
 def view_event(request):
     event=Event.objects.all()
     context = {"object_list": event}
     return render(request, 'certificates/view_event.html', context)
+
+
+def delete_event(request):
+    name = request.GET.get('name')
+    Event.objects.get(name=name).delete()
+    return redirect('view_event')
 
 
 def organise_event(request):
@@ -251,6 +258,7 @@ def edit_organised_event(request):
             organised_event.organiser = form.cleaned_data['organiser']
             organised_event.place = form.cleaned_data['place']
             organised_event.participants = form.cleaned_data['participants']
+            organised_event.num_of_days = (organised_event.end_date-organised_event.start_date).days
             organised_event.save()
             return redirect('/account/home')
     else:
@@ -286,14 +294,12 @@ def verify(request):
 
 def preview(request):
     title = request.GET.get('title')
-    certificate =  Certificate.objects.get(title=title)
+    certificate = Certificate.objects.get(title=title)
     event = Event.objects.get(certificate=certificate)
-    filename,path_folder = functions.unzip_folder(certificate)
+    filename, path_folder = functions.unzip_folder(certificate)
     participant = UserProfile.objects.get(first_name="Aditi")
-    pdf_filename = functions.create_certificate(filename,participant,path_folder,event)
-
+    pdf_filename = functions.create_certificate(filename, participant, path_folder, event)
     path_file = os.path.join(path_folder, pdf_filename)
-
     with open(path_file, 'rb') as pdf:
         response = HttpResponse(pdf.read(), content_type='application/pdf')
         response['Content-Disposition'] = pdf_filename
