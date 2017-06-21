@@ -117,13 +117,11 @@ def read_csv(file):
     """
     Reads a csv file to add users in the database for a particular event.
 
-    :param filename: The name of the .csv file
+    :param file: The name of the .csv file
             Format (Without spaces in between): first_name,last_name,username,password,email,user_type(s)[separated by ',' if more than 1 type ],DOB,college
     :return: Returns nothing
     """
     path = settings.MEDIA_ROOT
-    #file = os.path.join(path, filename)
-
     file1 = open(file, "r")
     first_line = file1.readline().strip()
     file1.close()
@@ -147,6 +145,10 @@ def read_csv(file):
 
         user = UserProfile.objects.get(email=email)
         add_user_certificate_info(user, organised_event, user_type)
+
+    filename = os.path.basename(file)
+    os.chdir(path)
+    os.remove(filename)
 
 
 def generate_qrcode(user, organised_event):
@@ -223,7 +225,7 @@ def send_email(participants, certificate, event):
         create_certificate(latex_file, participant, path_folder, event)
         email = EmailMessage('Certificate', 'Send Certificate', to=[participant.email])
         email_obj = email.send()
-        clean_certificate_files(participant.name, path_folder)
+        clean_certificate_files(participant.first_name, path_folder)
 
 
 
@@ -271,4 +273,8 @@ def clean_certificate_files(first_name, path):
     :return: Returns none
     """
     os.chdir(path)
-    os.remove(first_name + '.pdf', first_name + '.aux', first_name + '.log', first_name + '.tex')
+    os.remove(first_name + '.pdf')
+    os.remove(first_name + '.aux')
+    os.remove(first_name + '.log')
+    os.remove(first_name + '.tex')
+
