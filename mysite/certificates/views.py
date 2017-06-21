@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 import os
 
 from django.contrib.auth.decorators import login_required
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .forms import *
@@ -84,7 +86,9 @@ def add_user_profile(request):
         form = AddUserForm(request.POST,request.FILES)
         if form.is_valid():
             csv=request.FILES['csvFile']
-            functions.read_csv(csv)
+            path = default_storage.save('detail.csv', ContentFile(csv.read()))
+            tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+            functions.read_csv(tmp_file)
             return redirect('/account/home')
     else:
         form = AddUserForm()
@@ -146,9 +150,9 @@ def edit_certificate(request):
     title = request.GET.get('title')
     certificate = Certificate.objects.get(title=title)
     if request.method == "POST":
-        form = CertificateForm(request.POST)
+        form = CertificateForm(request.POST,request.FILES)
         if form.is_valid():
-            certificate.template = form.cleaned_data['template']
+            certificate.template = request.FILES['template']
             certificate.title = form.cleaned_data['title']
             certificate.save()
             return redirect('/account/home')
