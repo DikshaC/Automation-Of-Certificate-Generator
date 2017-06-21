@@ -1,7 +1,5 @@
 from __future__ import unicode_literals
-
 import os
-
 from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
@@ -85,7 +83,7 @@ def add_user_profile(request):
     if request.method == "POST":
         form = AddUserForm(request.POST, request.FILES)
         if form.is_valid():
-            csv=request.FILES['csvFile']
+            csv = request.FILES['csvFile']
             path = default_storage.save('detail.csv', ContentFile(csv.read()))
             tmp_file = os.path.join(settings.MEDIA_ROOT, path)
             functions.read_csv(tmp_file)
@@ -151,7 +149,7 @@ def edit_certificate(request):
     title = request.GET.get('title')
     certificate = Certificate.objects.get(title=title)
     if request.method == "POST":
-        form = CertificateForm(request.POST,request.FILES)
+        form = CertificateForm(request.POST, request.FILES)
         if form.is_valid():
             certificate.template = request.FILES['template']
             certificate.title = form.cleaned_data['title']
