@@ -11,6 +11,8 @@ urlpatterns = [
     url(r'^home/$', views.home, name='home'),
     url(r'^profile/$',views.profile, name='profile'),
 
+    url(r'^home/change_password/$', views.change_password, name='change_password'),
+
     url(r'^home/add_user/$', views.add_user_profile, name='add_user_profile'),
     url(r'^home/edit_user/$', views.edit_user_profile, name="edit_user"),
     url(r'^home/view_user/$', views.view_user_profile, name="view_user_profile"),

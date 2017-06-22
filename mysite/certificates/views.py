@@ -1,6 +1,9 @@
 from __future__ import unicode_literals
 import os
+
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.http import HttpResponse
@@ -8,7 +11,7 @@ from django.shortcuts import render, redirect
 from .forms import *
 from .models import *
 from . import functions
-from django.contrib.auth import authenticate, logout, login as LOGIN
+from django.contrib.auth import authenticate, logout, login as LOGIN, update_session_auth_hash
 
 
 #@login_required(login_url='/account')
@@ -61,11 +64,26 @@ def profile(request):
             user.save()
             return redirect('/account/home')
         else:
-            return render(request, 'certificates/add_modelform.html', {'form': form})
+            return render(request, 'certificates/my_profile.html', {'form': form})
     else:
         form = UserForm(initial={'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email,
                                  'username': user.username})
-        return render(request, 'certificates/add_modelform.html', {'form': form})
+        return render(request, 'certificates/my_profile.html', {'form':form})
+
+
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('profile')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'certificates/add_modelform.html', {'form': form})
 
 
 def add_user_profile(request):
@@ -114,7 +132,7 @@ def edit_user_profile(request):
                                         'dob': user.dob, 'college': user.college,
                                         'contact_number': user.contact_number})
         context = {'user': user, 'form': form, 'type': "user_profile"}
-        return render(request, 'certificates/edit_modelform.html', context)
+        return render(request, 'certificates/edit_delete_modelform.html', context)
 
 
 def view_user_profile(request):
@@ -154,7 +172,7 @@ def edit_certificate(request):
     else:
         form = CertificateForm(initial={'title': title, 'template': certificate.template})
         context = {'certificate': certificate, 'form': form, 'type': "certificate"}
-        return render(request, 'certificates/edit_modelform.html', context)
+        return render(request, 'certificates/edit_delete_modelform.html', context)
 
 
 def view_certificate(request):
@@ -176,21 +194,17 @@ def send_certificate(request):
 
 
 def send_email(request):
-    event_name = request.GET.get('event')
-    event = Event.objects.get(name=event_name)
-    certificate = event.certificate
-    organised_event = OrganisedEvent.objects.get(event=event)
+    pk = request.GET.get('oe_pk')
+    organised_event = OrganisedEvent.objects.get(pk=pk)
     participants = organised_event.get_participants()
-    name = participants[0].first_name
-    print(name)
-    functions.send_email(participants, certificate, event)
+    certificate = organised_event.event.certificate
+    functions.send_email(participants, certificate, organised_event)
     return redirect('/account/home')
 
 
 def show_participant(request):
-    name = request.GET.get('event')
-    event = Event.objects.get(name=name)
-    organised_event = OrganisedEvent.objects.get(event=event)
+    pk = request.GET.get('oe_pk')
+    organised_event = OrganisedEvent.objects.get(pk=pk)
     participants = organised_event.get_participants()
     context = {"participants": participants, "organised_event": organised_event}
     return render(request, 'certificates/show_participant.html', context)
@@ -224,7 +238,7 @@ def edit_event(request):
     else:
         form = EventForm(initial={'name': name, 'certificate': event.certificate, 'creator': event.creator})
         context = {'event': event, 'form': form, 'type': "event"}
-        return render(request, 'certificates/edit_modelform.html', context)
+        return render(request, 'certificates/edit_delete_modelform.html', context)
 
 
 def view_event(request):
@@ -253,8 +267,8 @@ def organise_event(request):
 
 
 def edit_organised_event(request):
-    event = request.GET.get('event')
-    organised_event = OrganisedEvent.objects.get(event=Event.objects.get(name=event))
+    pk = request.GET.get('oe_pk')
+    organised_event = OrganisedEvent.objects.get(pk=pk)
     if request.method == "POST":
         form = OrganisedEventForm(request.POST)
         if form.is_valid():
@@ -274,7 +288,7 @@ def edit_organised_event(request):
                                            'participants':
                                                [participant.pk for participant in organised_event.get_participants()]})
         context = {'organised_event': organised_event, 'form': form, 'type': "organised_event"}
-        return render(request, 'certificates/edit_modelform.html', context)
+        return render(request, 'certificates/edit_delete_modelform.html', context)
 
 
 def view_organised_event(request):
@@ -284,9 +298,8 @@ def view_organised_event(request):
 
 
 def delete_organised_event(request):
-    name = request.GET.get('event')
-    event = Event.objects.get(name=name)
-    OrganisedEvent.objects.get(event=event).delete()
+    pk = request.GET.get('oe_pk')
+    OrganisedEvent.objects.get(pk=pk).delete()
     return redirect('view_Organised_event')
 
 
@@ -310,11 +323,15 @@ def preview(request):
     title = request.GET.get('title')
     certificate = Certificate.objects.get(title=title)
     event = Event.objects.get(certificate=certificate)
+
     filename, path_folder = functions.unzip_folder(certificate)
-    participant = UserProfile.objects.get(first_name="Aditi")
-    pdf_filename = functions.create_certificate(filename, participant, path_folder, event)
+    pdf_filename = functions.preview_certificate(filename, path_folder, event)
+
     path_file = os.path.join(path_folder, pdf_filename)
     with open(path_file, 'rb') as pdf:
         response = HttpResponse(pdf.read(), content_type='application/pdf')
         response['Content-Disposition'] = pdf_filename
+        test_name=pdf_filename.split('.')[0]
+        functions.clean_certificate_files(test_name, path_folder)
         return response
+

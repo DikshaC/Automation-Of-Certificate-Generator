@@ -112,7 +112,7 @@
 <h4> Organised Events List:</h4>
             <ul style="list-style-type:square">
 {% for oe in object_list %}
-                <li><a href="{% url 'show_participant' %}?event={{oe.event.name}}" style="text-decoration:none;font-size:20px"> {{ oe.event.name }}</a></li><br>
+                <li><a href="{% url 'show_participant' %}?oe_pk={{oe.pk}}" style="text-decoration:none;font-size:20px"> {{ oe.event.name }}</a></li><br>
 
 {% endfor %} </ul>
 {% endblock %}
