@@ -2,8 +2,6 @@ import csv
 import hashlib
 import os
 import subprocess
-
-import datetime
 from django.core.mail import EmailMessage
 from string import Template
 from .models import *
@@ -77,7 +75,7 @@ def organise_event(event, start_date, end_date, organiser, place, participants):
     return organised_event
 
 
-def add_participant(event, participants_email):
+def add_participant(organised_event_pk, participants_email):
     """
     Adds participants/users to the events organised.
 
@@ -85,7 +83,7 @@ def add_participant(event, participants_email):
     :param participants_email: The list of participants to be added to an event organised.
     :return: Returns the participants's list which are successfully added to the database
     """
-    organised_event = OrganisedEvent.objects.get(event=event)
+    organised_event = OrganisedEvent.objects.get(pk=organised_event_pk)
     for participant_email in participants_email:
         user = UserProfile.objects.get(email=participant_email)
         organised_event.participants.add(user)
@@ -113,12 +111,17 @@ def add_user_certificate_info(user, organised_event, user_type):
     return user_info
 
 
+#TODO: add organised event primary key things here
 def read_csv(file):
     """
     Reads a csv file to add users in the database for a particular event.
+    Also deletes the .csv file from database.
 
     :param file: The name of the .csv file
-            Format (Without spaces in between): first_name,last_name,username,password,email,user_type(s)[separated by ',' if more than 1 type ],DOB,college
+            Format (Without spaces in between):
+            First line: The name of the organised event without inverted commas
+            Second line (onwards):
+            first_name,last_name,username,password,email,user_type(s)[separated by ',' if more than 1 type ],DOB,college
     :return: Returns nothing
     """
     path = settings.MEDIA_ROOT
@@ -156,8 +159,11 @@ def generate_qrcode(user, organised_event):
     Generates the qrcode for a given user in an organised event
     :param user: The first name of the user.
     :param organised_event: The name of the organised event.
+
     :return: Returns the qrcode of the user
     """
+
+    user_info = UserCertificateInfo.objects.get(user=user, organised_event=organised_event)
     user_id = int(user.id)
     hexa1 = hex(user_id).replace('0x', '').zfill(6).upper()
     organised_event_id = int(organised_event.id)
@@ -175,10 +181,10 @@ def generate_qrcode(user, organised_event):
             qrcode = serial_key[0:num]
             uniqueness = True
         else:
-            if present[0].user != user:
+            if user_info not in present:
                 num += 1
             else:  # when a user generates his certificate more than 1 time
-                qrcode = serial_key[0:num]
+                qrcode = user_info.qrcode
                 uniqueness = True
 
     user_info = UserCertificateInfo.objects.get(user=user, organised_event=organised_event)
@@ -189,8 +195,9 @@ def generate_qrcode(user, organised_event):
 
 def unzip_folder(certificate):
     """
-    :param certificate:
-    :return:
+    Unzips the zipped folder containing latex file and related stuffs.
+    :param certificate: The certificate object whose template (zipped file) has to be unzipped.
+    :return: Returns filename and the path of the file
     """
 
     file = certificate.template
@@ -209,7 +216,7 @@ def unzip_folder(certificate):
     return filename, path_folder
 
 
-def send_email(participants, certificate, event):
+def send_email(participants, certificate, organised_event):
     """
     Sends email to the participants of a particular organised event.
 
@@ -222,25 +229,24 @@ def send_email(participants, certificate, event):
 
     for participant in participants:
         participant = participant
-        create_certificate(latex_file, participant, path_folder, event)
+        create_certificate(latex_file, participant, path_folder, organised_event)
         email = EmailMessage('Certificate', 'Send Certificate', to=[participant.email])
         email_obj = email.send()
         clean_certificate_files(participant.first_name, path_folder)
 
 
-
-def create_certificate(latex_template, participant, path_folder, event):
+def create_certificate(latex_template, participant, path_folder, organised_event):
     """
     Creates the certificate from latex template and returns the name of the certificate.
 
     :param latex_template:The latex file (.tex) which has to converted to pdf
-    :param participant: The participant whose certificate has to be created
+    :param participant: The participant (UserProfile object) whose certificate has to be created
     :param path_folder: The path of the folder containing latex file (.tex)
-    :param event: The event whose certificate has to be created for the participant
+    :param event: The event (Event object) whose certificate has to be created for the participant
+
     :return: Returns the name of the pdf file : Default: (Name of the participant).pdf
     """
 
-    organised_event = OrganisedEvent.objects.get(event=event)
     qrcode = generate_qrcode(participant,organised_event)
     user_info = UserCertificateInfo.objects.get(user=participant,organised_event=organised_event)
 
@@ -250,8 +256,11 @@ def create_certificate(latex_template, participant, path_folder, event):
     print(file)
     file.close()
 
-    content_tex = content.safe_substitute(name=participant.first_name+" "+participant.last_name,eventName=event.name,qrcode=qrcode,start_date=organised_event.start_date,
-                                          end_date=organised_event.end_date,num_days=organised_event.num_of_days,user_type=user_info.user_type)
+    content_tex = content.safe_substitute(name=participant.first_name+" "+participant.last_name,
+                                          eventName=organised_event.event.name,qrcode=qrcode,
+                                          start_date=organised_event.start_date,
+                                          end_date=organised_event.end_date,num_days=organised_event.num_of_days,
+                                          user_type=user_info.user_type)
 
     user_latex_file = os.path.join(path_folder, participant.first_name + '.tex')
     user_file = open(user_latex_file, 'w+')
@@ -278,3 +287,27 @@ def clean_certificate_files(first_name, path):
     os.remove(first_name + '.log')
     os.remove(first_name + '.tex')
 
+
+def preview_certificate(latex_template, path_folder, event):
+    latex_file = os.path.join(path_folder, latex_template)
+    file = open(latex_file, "r")
+    content = Template(file.read())
+    print(file)
+    file.close()
+
+    content_tex = content.safe_substitute(name="testFirstName" + " " + "testLastName",
+                                          eventName=event.name, qrcode="abc01",
+                                          start_date="2017-03-30",
+                                          end_date="2017-03-31", num_days=1,
+                                          user_type="testParticipant")
+
+    user_latex_file = os.path.join(path_folder, "testFirstName" + '.tex')
+    user_file = open(user_latex_file, 'w+')
+    user_file.write(content_tex)
+    user_file.close()
+
+    os.chdir(path_folder)
+    cmd = ['pdflatex', '-interaction', 'nonstopmode', user_latex_file]
+    proc = subprocess.Popen(cmd)
+    proc.communicate()
+    return "testFirstName.pdf"

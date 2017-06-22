@@ -99,25 +99,42 @@
                     <a class="nav-link" href="{% url 'logout' %}"><i class="fa fa-fw fa-sign-out"></i> Logout</a>
                 </li>
             </ul>
+            </ul>
         </div>
     </nav>
 
     <div class="content-wrapper py-3">
-        <div class="container-fluid" style="height:600px">
+        <div class="container-fluid">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
                 <li class="breadcrumb-item active">My Home</li>
             </ol>
+            {% block body %}
+        </div>
+        <div class="container-fluid" style="height:570px">
+            <div align="center">
+                <form method="POST"  enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <table  border="2px solid black" class="table table-bordered"  style="width:60%">
+                      {{ form.as_table}}
+                    </table>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    {% if type == 'event' %}
+                         <button type="button" class="btn btn-danger" onclick="location.href='{% url 'delete_event' %}?name={{event.name}}'">Delete</button>
+                     {% elif type == 'organised_event' %}
+                         <button type="button" class="btn btn-danger" onclick="location.href='{% url 'delete_organised_event' %}?oe_pk={{organised_event.pk}}'">Delete</button>
+                    {% elif type == 'user_profile' %}
+                         <button type="button" class="btn btn-danger" onclick="location.href='{% url 'delete_user_profile' %}?email={{user.email}}'">Delete</button>
+                     {% elif type == 'certificate' %}
+                         <button type="button" class="btn btn-danger" onclick="location.href='{% url 'delete_certificate' %}?title={{certificate.title}}'">Delete</button>
+                    {% endif %}
+                </form>
 
-{% block body %}
-<h4>Organised Events List:</h4>
-              <ul style="list-style-type:square">
-{% for oe in object_list %}
-                  <li><a href="{% url 'edit_organised_event' %}?oe_pk={{oe.pk}}" style="text-decoration:none;font-size:20px"> {{ oe.event.name }}</a></li><br>
-                  {% endfor %}</ul>
-{% endblock %}
-</div>
+            </div>
+            {% endblock %}
+        </div>
     </div>
+
     <!-- /.content-wrapper -->
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fa fa-chevron-up"></i>
@@ -140,4 +157,3 @@
 
 </body>
 </html>
-

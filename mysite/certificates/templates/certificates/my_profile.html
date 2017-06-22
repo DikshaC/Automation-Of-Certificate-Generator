@@ -118,18 +118,9 @@
                     <table  border="2px solid black" class="table table-bordered"  style="width:60%">
                       {{ form.as_table}}
                     </table>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                    {% if type == 'event' %}
-                         <button type="button" class="btn btn-danger" onclick="location.href='{% url 'delete_event' %}?name={{event.name}}'">Delete</button>
-                     {% elif type == 'organised_event' %}
-                         <button type="button" class="btn btn-danger" onclick="location.href='{% url 'delete_organised_event' %}?event={{organised_event.event.name}}'">Delete</button>
-                    {% elif type == 'user_profile' %}
-                         <button type="button" class="btn btn-danger" onclick="location.href='{% url 'delete_user_profile' %}?email={{user.email}}'">Delete</button>
-                     {% elif type == 'certificate' %}
-                         <button type="button" class="btn btn-danger" onclick="location.href='{% url 'delete_certificate' %}?title={{certificate.title}}'">Delete</button>
-                    {% endif %}
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-danger" onclick="location.href='{% url 'change_password' %}'">Change Password</button>
                 </form>
-
             </div>
             {% endblock %}
         </div>
