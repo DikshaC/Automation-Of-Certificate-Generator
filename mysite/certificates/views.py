@@ -11,7 +11,7 @@ from . import functions
 from django.contrib.auth import authenticate, logout, login as LOGIN
 
 
-@login_required(login_url='/account')
+#@login_required(login_url='/account')
 def home(request):
     if request.user.is_authenticated():
         return render(request, 'certificates/index.html')
@@ -20,25 +20,14 @@ def home(request):
 
 
 def login(request):
-    if not request.user.is_authenticated():
-        if request.method == "POST":
-            form = LoginForm(request.POST)
-            if form.is_valid():
-                user = authenticate(request, username=form.cleaned_data['username'],
-                                    password=form.cleaned_data['password'])
-                if user is not None:
-                    LOGIN(request, user)
-                    return redirect('home/')
-                else:
-                    return render(request, 'certificates/login.html', {'form': form})
-            else:
-                return render(request, 'certificates/login.html', {'form': form})
-        else:
-            form = LoginForm()
-            return render(request, 'certificates/login.html', {'form': form})
-
+    email = request.GET.get('email')
+    password = request.GET.get('password')
+    user = authenticate(request, email=email, password=password)
+    if user is not None:
+        LOGIN(request, user)
+        return redirect('home/')
     else:
-        return redirect('/account/home')
+        return render(request, 'certificates/signup.html')
 
 
 def logout_user(request):
