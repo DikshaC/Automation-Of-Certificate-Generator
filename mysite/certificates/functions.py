@@ -78,8 +78,7 @@ def organise_event(event, start_date, end_date, organiser, place, participants):
 def add_participant(organised_event_pk, participants_email):
     """
     Adds participants/users to the events organised.
-
-    :param event: The organised event name in which participants are to be added
+    :param organised_event_pk: Organised event'd id
     :param participants_email: The list of participants to be added to an event organised.
     :return: Returns the participants's list which are successfully added to the database
     """
@@ -222,7 +221,7 @@ def send_email(participants, certificate, organised_event):
 
     :param participants: List of participants to whom certificate will be sent
     :param certificate: The certificate object whose template has to be used to send certificates
-    :param event: The event object whose certificate has to be sent.
+    :param organised_event: The organised event object whose certificate has to be sent.
     :return: None
     """
     latex_file, path_folder = unzip_folder(certificate)
@@ -242,13 +241,13 @@ def create_certificate(latex_template, participant, path_folder, organised_event
     :param latex_template:The latex file (.tex) which has to converted to pdf
     :param participant: The participant (UserProfile object) whose certificate has to be created
     :param path_folder: The path of the folder containing latex file (.tex)
-    :param event: The event (Event object) whose certificate has to be created for the participant
+    :param organised_event: The organised event object whose certificate has to be created for the participant
 
     :return: Returns the name of the pdf file : Default: (Name of the participant).pdf
     """
 
-    qrcode = generate_qrcode(participant,organised_event)
-    user_info = UserCertificateInfo.objects.get(user=participant,organised_event=organised_event)
+    qrcode = generate_qrcode(participant, organised_event)
+    user_info = UserCertificateInfo.objects.get(user=participant, organised_event=organised_event)
 
     latex_file = os.path.join(path_folder, latex_template)
     file = open(latex_file, "r")
@@ -257,9 +256,9 @@ def create_certificate(latex_template, participant, path_folder, organised_event
     file.close()
 
     content_tex = content.safe_substitute(name=participant.first_name+" "+participant.last_name,
-                                          eventName=organised_event.event.name,qrcode=qrcode,
+                                          eventName=organised_event.event.name, qrcode=qrcode,
                                           start_date=organised_event.start_date,
-                                          end_date=organised_event.end_date,num_days=organised_event.num_of_days,
+                                          end_date=organised_event.end_date, num_days=organised_event.num_of_days,
                                           user_type=user_info.user_type)
 
     user_latex_file = os.path.join(path_folder, participant.first_name + '.tex')

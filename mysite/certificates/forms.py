@@ -7,9 +7,8 @@ from django.conf import settings
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(required=True)
-    password = forms.CharField(widget=forms.PasswordInput)
-    keep_logged = forms.BooleanField(required=False, label="Keep me logged in")
+    username = forms.CharField(required=True, label=mark_safe("<strong>User Name</strong>"))
+    password = forms.CharField(widget=forms.PasswordInput, label=mark_safe("<strong>Password</strong>"))
 
 
 class RegistrationForm(forms.Form):
@@ -65,4 +64,4 @@ class VerificationForm(forms.Form):
 
 
 class AddUserForm(forms.Form):
-    csvFile=forms.FileField()
+    csvFile=forms.FileField(label=mark_safe("<strong>CSV File</strong>"))

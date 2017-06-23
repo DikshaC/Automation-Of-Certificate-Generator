@@ -1,15 +1,21 @@
-{% extends 'base.html' %}
-{% block title %}Login{% endblock %}
-{% block body %}
-    {% load material_form %}
+{% load static %}
+<html>
+    <head>
+        <title>Login From</title>
+        <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    </head>
+    <body>
     <h4 align="center">Login Form</h4>
     <div align="center">
-        <form method="POST" style="border:solid 3px;width:500px">
+        <form method="POST">
             {% csrf_token %}
-            {% form form=form %} {% endform %}
-            <button type="submit" class="btn btn primary" >Login</button><br><br>
+            <table  border="2px solid black" class="table table-bordered"  style="width:60%">
+                {{ form.as_table}}
+            </table>
+            <button type="submit" class="btn btn-primary" >Login</button><br><br>
             <b>Not a member?Register</b>
-            <button type="button"  class="btn" onclick="location.href='{% url 'register' %}'">Register</button>
+            <button type="button"  class="btn btn-primary" onclick="location.href='{% url 'register' %}'">Register</button>
         </form>
     </div>
-{% endblock %}
+    </body>
+</html>

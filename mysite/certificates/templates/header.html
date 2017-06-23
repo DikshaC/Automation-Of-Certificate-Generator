@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+
+	<title>Automation Of Certificate</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="{% static 'vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+
+    <!-- Plugin CSS -->
+    <link href="{% static 'vendor/datatables/dataTables.bootstrap4.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/sb-admin.css' %}" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+    <!-- Navigation -->
+    <nav id="mainNav" class="navbar static-top navbar-toggleable-md navbar-inverse bg-inverse">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+                data-target="#navbarExample" aria-controls="navbarExample" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="#">Automation Of Certificate Generator</a>
+        <div class="collapse navbar-collapse" id="navbarExample">
+            <ul class="sidebar-nav navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'profile' %}"> Profile</a>
+                </li>
+
+				<li class="nav-item">
+                    <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#user"> Users</a>
+                    <ul class="sidebar-second-level collapse" id="user">
+                        <li>
+                            <a href="{% url 'add_user_profile' %}">Add user</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'view_user_profile' %}">View users</a>
+                        </li>
+                        <li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#certi"> Certificate</a>
+                    <ul class="sidebar-second-level collapse" id="certi">
+                        <li>
+                            <a href="{% url 'add_certificate' %}">Add Certificate</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'view_certificate' %}">View Certificatse</a>
+                        </li>
+
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#abcd"> Events</a>
+                    <ul class="sidebar-second-level collapse" id="abcd">
+                        <li>
+                            <a href="{% url 'add_event' %}">Create Event</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'view_event' %}">View Events</a>
+                        </li>
+                        <li>
+                    </ul>
+                </li>
+				<li class="nav-item">
+                    <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#coll">Organised Events</a>
+                    <ul class="sidebar-second-level collapse" id="coll">
+                        <li>
+                            <a href="{% url 'organise_event' %}">Organise Event</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'view_organised_event' %}">View Organised Events</a>
+                        </li>
+
+                    </ul>
+                </li>
+                 <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'send_certificate' %}"> Send Certificate</a>
+                </li>
+
+
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                 <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}"><i class="fa fa-fw fa-sign-in"></i> Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}"><i class="fa fa-fw fa-sign-out"></i> Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="content-wrapper py-3">
+
+        <div class="container-fluid" style="height:650px">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" style="text-decoration:none"><i class="fa fa-fw fa-sign-in"></i>Home</a></li>
+            </ol>
+
+             {% block body%}
+        {% endblock %}
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- /.content-wrapper -->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fa fa-chevron-up"></i>
+    </a>
+    <!-- Bootstrap core JavaScript -->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/tether/tether.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'vendor/chart.js/Chart.min.js' %}"></script>
+    <script src="{% static 'vendor/datatables/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'vendor/datatables/dataTables.bootstrap4.js' %}"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="{% static 'js/sb-admin.min.js' %}"></script>
+
+</body>
+
+</html>

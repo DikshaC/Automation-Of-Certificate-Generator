@@ -23,14 +23,21 @@ def home(request):
 
 
 def login(request):
-    email = request.GET.get('email')
-    password = request.GET.get('password')
-    user = authenticate(request, email=email, password=password)
-    if user is not None:
-        LOGIN(request, user)
-        return redirect('home/')
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            user = authenticate(request, username=form.cleaned_data['username'],
+                                password=form.cleaned_data['password'])
+            if user is not None:
+                LOGIN(request, user)
+                return redirect('home/')
+            else:
+                return render(request, 'certificates/login.html', {'form': form})
+        else:
+            return render(request, 'certificates/login.html', {'form': form})
     else:
-        return render(request, 'certificates/signup.html')
+        form = LoginForm()
+        return render(request, 'certificates/login.html', {'form': form})
 
 
 def logout_user(request):
@@ -68,7 +75,7 @@ def profile(request):
     else:
         form = UserForm(initial={'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email,
                                  'username': user.username})
-        return render(request, 'certificates/my_profile.html', {'form':form})
+        return render(request, 'certificates/my_profile.html', {'form': form})
 
 
 def change_password(request):
@@ -331,7 +338,7 @@ def preview(request):
     with open(path_file, 'rb') as pdf:
         response = HttpResponse(pdf.read(), content_type='application/pdf')
         response['Content-Disposition'] = pdf_filename
-        test_name=pdf_filename.split('.')[0]
+        test_name = pdf_filename.split('.')[0]
         functions.clean_certificate_files(test_name, path_folder)
         return response
 
