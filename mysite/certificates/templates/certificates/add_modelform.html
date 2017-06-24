@@ -1,5 +1,12 @@
 {% extends 'header.html' %}
             {% block body %}
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li style="color:green"><b>{{ message }}</b></li>
+    {% endfor %}
+</ul>
+{% endif %}
             <div align="center">
                 <form method="POST"  enctype="multipart/form-data">
                     {% csrf_token %}
@@ -9,5 +16,5 @@
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>
-            {% endblock %}
 
+{% endblock %}

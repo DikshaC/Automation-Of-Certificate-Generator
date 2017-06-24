@@ -8,16 +8,18 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+
+from mysite import settings
 from .forms import *
 from .models import *
 from . import functions
 from django.contrib.auth import authenticate, logout, login as LOGIN, update_session_auth_hash
 
 
-#@login_required(login_url='/account')
+@login_required(login_url='/account')
 def home(request):
     if request.user.is_authenticated():
-        return render(request, 'certificates/index.html')
+        return render(request, 'certificates/home.html')
     else:
         return redirect('/account')
 
@@ -69,7 +71,7 @@ def profile(request):
             user.username = form.cleaned_data['username']
             user.email = form.cleaned_data['email']
             user.save()
-            return redirect('/account/home')
+            return redirect('profile')
         else:
             return render(request, 'certificates/my_profile.html', {'form': form})
     else:
@@ -86,8 +88,6 @@ def change_password(request):
             update_session_auth_hash(request, user)  # Important!
             messages.success(request, 'Your password was successfully updated!')
             return redirect('profile')
-        else:
-            messages.error(request, 'Please correct the error below.')
     else:
         form = PasswordChangeForm(request.user)
     return render(request, 'certificates/add_modelform.html', {'form': form})
@@ -101,10 +101,14 @@ def add_user_profile(request):
             path = default_storage.save('detail.csv', ContentFile(csv.read()))
             tmp_file = os.path.join(settings.MEDIA_ROOT, path)
             functions.read_csv(tmp_file)
-            return redirect('/account/home')
+            messages.success(request, 'User added successfully! Add next')
+            form = AddUserForm()
+            return render(request, "certificates/add_modelform.html", {'form': form})
+        else:
+            return render(request, "certificates/add_modelform.html", {'form': form})
     else:
         form = AddUserForm()
-        return render(request, "certificates/add_modelform.html", {'form': form})
+        return render(request, "certificates/add_user.html", {'form': form})
 
 
 '''def add_user_profile(request):
@@ -133,7 +137,8 @@ def edit_user_profile(request):
             user.college = form.cleaned_data['college']
             user.contact_number = form.cleaned_data['contact_number']
             user.save()
-            return redirect('/account/home')
+            messages.success(request, 'User updated successfully !')
+            return redirect('view_user_profile')
     else:
         form = UserProfileForm(initial={'first_name': user.first_name, 'last_name': user.last_name, 'email': email,
                                         'dob': user.dob, 'college': user.college,
@@ -151,6 +156,7 @@ def view_user_profile(request):
 def delete_user_profile(request):
     email = request.GET.get('email')
     UserProfile.objects.get(email=email).delete()
+    messages.success(request, 'User deleted successfully!')
     return redirect('view_user_profile')
 
 
@@ -160,7 +166,11 @@ def add_certificate(request):
         if form.is_valid():
             file = request.FILES['template']
             functions.add_certificate(file, form.cleaned_data['title'])
-            return redirect('/account/home')
+            messages.success(request, 'Certificate ' + form.cleaned_data['title'] + ' added successfully! Add next')
+            form = CertificateForm()
+            return render(request, "certificates/add_modelform.html", {'form': form})
+        else:
+            return render(request, "certificates/add_modelform.html", {'form': form})
     else:
         form = CertificateForm()
         return render(request, "certificates/add_modelform.html", {'form': form})
@@ -175,7 +185,8 @@ def edit_certificate(request):
             certificate.template = request.FILES['template']
             certificate.title = form.cleaned_data['title']
             certificate.save()
-            return redirect('/account/home')
+            messages.success(request, 'Certificate updated successfully !')
+            return redirect('view_certificate')
     else:
         form = CertificateForm(initial={'title': title, 'template': certificate.template})
         context = {'certificate': certificate, 'form': form, 'type': "certificate"}
@@ -191,6 +202,7 @@ def view_certificate(request):
 def delete_certificate(request):
     title = request.GET.get('title')
     Certificate.objects.get(title=title).delete()
+    messages.success(request, 'Certificate deleted successfully!')
     return redirect('view_certificate')
 
 
@@ -223,7 +235,9 @@ def add_event(request):
         if form.is_valid():
             functions.create_event(form.cleaned_data['name'], form.cleaned_data['certificate'],
                                    form.cleaned_data['creator'])
-            return redirect('/account/home')
+            messages.success(request, 'Event '+form.cleaned_data['name']+' added successfully! Add next')
+            form = EventForm()
+            return render(request, "certificates/add_modelform.html", {'form': form})
         else:
             return render(request, "certificates/add_modelform.html", {'form': form})
     else:
@@ -241,7 +255,8 @@ def edit_event(request):
             event.creator = form.cleaned_data['creator']
             event.name = form.cleaned_data['name']
             event.save()
-            return redirect('/account/home')
+            messages.success(request, 'Event updated successfully !')
+            return redirect('view_event')
     else:
         form = EventForm(initial={'name': name, 'certificate': event.certificate, 'creator': event.creator})
         context = {'event': event, 'form': form, 'type': "event"}
@@ -257,6 +272,7 @@ def view_event(request):
 def delete_event(request):
     name = request.GET.get('name')
     Event.objects.get(name=name).delete()
+    messages.success(request, 'Event deleted successfully!')
     return redirect('view_event')
 
 
@@ -267,7 +283,11 @@ def organise_event(request):
             functions.organise_event(form.cleaned_data['event'], form.cleaned_data['start_date'],
                                      form.cleaned_data['end_date'], form.cleaned_data['organiser'],
                                      form.cleaned_data['place'], form.cleaned_data['participants'])
-            return redirect('/account/home')
+            messages.success(request, 'Organised Event added successfully! Add next')
+            form = OrganisedEventForm()
+            return render(request, "certificates/add_modelform.html", {'form': form})
+        else:
+            return render(request, "certificates/add_modelform.html", {'form': form})
     else:
         form = OrganisedEventForm()
         return render(request, "certificates/add_modelform.html", {'form': form})
@@ -287,7 +307,9 @@ def edit_organised_event(request):
             organised_event.participants = form.cleaned_data['participants']
             organised_event.num_of_days = (organised_event.end_date-organised_event.start_date).days
             organised_event.save()
-            return redirect('/account/home')
+            messages.success(request, 'Organised Event updated successfully !')
+            return redirect('view_organised_event')
+
     else:
         form = OrganisedEventForm(initial={'event': organised_event.event, 'start_date': organised_event.start_date,
                                            'end_date': organised_event.end_date,
@@ -307,7 +329,8 @@ def view_organised_event(request):
 def delete_organised_event(request):
     pk = request.GET.get('oe_pk')
     OrganisedEvent.objects.get(pk=pk).delete()
-    return redirect('view_Organised_event')
+    messages.success(request, 'Organised Event deleted successfully!')
+    return redirect('view_organised_event')
 
 
 def verify(request):

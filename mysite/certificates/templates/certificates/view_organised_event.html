@@ -1,6 +1,13 @@
 {% extends 'header.html' %}
 
 {% block body %}
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li style="color:green"><b>{{ message }}</b></li>
+    {% endfor %}
+</ul>
+{% endif %}
 <h4>Organised Events List:</h4>
               <ul style="list-style-type:square">
 {% for oe in object_list %}

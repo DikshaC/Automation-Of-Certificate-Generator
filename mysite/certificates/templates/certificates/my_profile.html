@@ -1,5 +1,14 @@
 {% extends 'header.html' %}
+{% block head %}
+{% endblock %}
             {% block body %}
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li style="color:green"><b>{{ message }}</b></li>
+    {% endfor %}
+</ul>
+{% endif %}
             <div align="center">
                 <form method="POST"  enctype="multipart/form-data">
                     {% csrf_token %}
@@ -10,4 +19,5 @@
                     <button type="button" class="btn btn-danger" onclick="location.href='{% url 'change_password' %}'">Change Password</button>
                 </form>
             </div>
+
             {% endblock %}

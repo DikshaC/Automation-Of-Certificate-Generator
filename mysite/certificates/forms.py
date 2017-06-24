@@ -1,9 +1,6 @@
 from django import forms
 from django.utils.safestring import mark_safe
-from material import Layout, Row, Fieldset, Column
-from django.forms import ModelForm, SelectDateWidget, widgets
 from .models import *
-from django.conf import settings
 
 
 class LoginForm(forms.Form):
@@ -12,22 +9,19 @@ class LoginForm(forms.Form):
 
 
 class RegistrationForm(forms.Form):
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
     username = forms.CharField()
     email = forms.EmailField(label="Email Address")
     password = forms.CharField(widget=forms.PasswordInput)
     password_confirm = forms.CharField(widget=forms.PasswordInput, label="Confirm password")
-    first_name = forms.CharField(required=False)
-    last_name = forms.CharField(required=False)
-    layout = Layout('username', 'email',
-                    Row('password', 'password_confirm'),
-                    Fieldset('Personal details',
-                             Row('first_name', 'last_name')))
 
 
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'first_name', 'last_name']
+
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
@@ -47,10 +41,18 @@ class EventForm(forms.ModelForm):
         fields = ['name', 'certificate', 'creator']
 
 
+class DateInput(forms.DateInput):
+    input_type = 'date'
+
+
 class OrganisedEventForm(forms.ModelForm):
     class Meta:
         model = OrganisedEvent
         fields = ['event', 'start_date', 'end_date', 'organiser', 'place', 'participants']
+        widgets = {
+            'start_date': DateInput(),
+            'end_date': DateInput(),
+        }
 
 
 class UserCertificateInfoForm(forms.ModelForm):
