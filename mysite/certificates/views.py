@@ -355,7 +355,7 @@ def preview(request):
     event = Event.objects.get(certificate=certificate)
 
     filename, path_folder = functions.unzip_folder(certificate)
-    pdf_filename = functions.preview_certificate(filename, path_folder, event)
+    pdf_filename = view_certificate(filename, path_folder, event)
 
     path_file = os.path.join(path_folder, pdf_filename)
     with open(path_file, 'rb') as pdf:

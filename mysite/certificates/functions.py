@@ -4,6 +4,7 @@ import os
 import subprocess
 from django.core.mail import EmailMessage
 from string import Template
+from django.http import HttpResponse
 from .models import *
 import zipfile
 from django.conf import settings
@@ -186,10 +187,11 @@ def generate_qrcode(user, organised_event):
                 qrcode = user_info.qrcode
                 uniqueness = True
 
-    user_info = UserCertificateInfo.objects.get(user=user, organised_event=organised_event)
-    user_info.qrcode = qrcode
-    user_info.save()
-    return qrcode
+    link_qrcode = 'www.fossee.in/account/verify/'+qrcode
+    #user_info = UserCertificateInfo.objects.get(user=user, organised_event=organised_event)
+    #user_info.qrcode = qrcode
+    #user_info.save()
+    return link_qrcode,qrcode
 
 
 def unzip_folder(certificate):
@@ -246,8 +248,11 @@ def create_certificate(latex_template, participant, path_folder, organised_event
     :return: Returns the name of the pdf file : Default: (Name of the participant).pdf
     """
 
-    qrcode = generate_qrcode(participant, organised_event)
-    user_info = UserCertificateInfo.objects.get(user=participant, organised_event=organised_event)
+
+    link_qrcode, qrcode = generate_qrcode(participant,organised_event)
+    user_info = UserCertificateInfo.objects.get(user=participant,organised_event=organised_event)
+    user_info.qrcode=qrcode
+    user_info.save()
 
     latex_file = os.path.join(path_folder, latex_template)
     file = open(latex_file, "r")
@@ -258,7 +263,7 @@ def create_certificate(latex_template, participant, path_folder, organised_event
     content_tex = content.safe_substitute(name=participant.first_name+" "+participant.last_name,
                                           eventName=organised_event.event.name, qrcode=qrcode,
                                           start_date=organised_event.start_date,
-                                          end_date=organised_event.end_date, num_days=organised_event.num_of_days,
+                                          end_date=organised_event.end_date,num_days=organised_event.num_of_days,
                                           user_type=user_info.user_type)
 
     user_latex_file = os.path.join(path_folder, participant.first_name + '.tex')
@@ -267,7 +272,7 @@ def create_certificate(latex_template, participant, path_folder, organised_event
     user_file.close()
 
     os.chdir(path_folder)
-    cmd = ['pdflatex', '-interaction', 'nonstopmode', user_latex_file]
+    cmd = ['pdflatex', '-shell-escape', user_latex_file]
     proc = subprocess.Popen(cmd)
     proc.communicate()
     return participant.first_name + '.pdf'
@@ -281,7 +286,8 @@ def clean_certificate_files(first_name, path):
     :return: Returns none
     """
     os.chdir(path)
-    os.remove(first_name + '.pdf')
+    #os.remove(first_name + '.pdf')
+    os.remove(first_name + '-pics.pdf')
     os.remove(first_name + '.aux')
     os.remove(first_name + '.log')
     os.remove(first_name + '.tex')
@@ -294,8 +300,13 @@ def preview_certificate(latex_template, path_folder, event):
     print(file)
     file.close()
 
+    user = UserProfile.objects.get(first_name="Diksha")
+    oe = OrganisedEvent.objects.get(event=Event.objects.get(name="test"))
+
+    link_qrcode, qrcode=generate_qrcode(user,oe)
+
     content_tex = content.safe_substitute(name="testFirstName" + " " + "testLastName",
-                                          eventName=event.name, qrcode="abc01",
+                                          qrcode=qrcode, link_qrcode=link_qrcode,
                                           start_date="2017-03-30",
                                           end_date="2017-03-31", num_days=1,
                                           user_type="testParticipant")
@@ -306,7 +317,7 @@ def preview_certificate(latex_template, path_folder, event):
     user_file.close()
 
     os.chdir(path_folder)
-    cmd = ['pdflatex', '-interaction', 'nonstopmode', user_latex_file]
+    cmd = ['pdflatex' ,'-shell-escape', user_latex_file]
     proc = subprocess.Popen(cmd)
     proc.communicate()
     return "testFirstName.pdf"
