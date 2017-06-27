@@ -8,8 +8,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-
-from mysite import settings
+from mysite.mysite import settings
 from .forms import *
 from .models import *
 from . import functions
@@ -127,18 +126,20 @@ def add_user_profile(request):
 def edit_user_profile(request):
     email = request.GET.get('email')
     user = UserProfile.objects.get(email=email)
+
     if request.method == "POST":
         form = UserProfileForm(request.POST)
         if form.is_valid():
             user.first_name = form.cleaned_data['first_name']
             user.last_name = form.cleaned_data['last_name']
-            user.email = form.cleaned_data['email']
+           # user.email = form.cleaned_data['email']
             user.dob = form.cleaned_data['dob']
             user.college = form.cleaned_data['college']
             user.contact_number = form.cleaned_data['contact_number']
             user.save()
             messages.success(request, 'User updated successfully !')
             return redirect('view_user_profile')
+
     else:
         form = UserProfileForm(initial={'first_name': user.first_name, 'last_name': user.last_name, 'email': email,
                                         'dob': user.dob, 'college': user.college,

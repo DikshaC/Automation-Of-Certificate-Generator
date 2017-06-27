@@ -1,7 +1,11 @@
 from __future__ import unicode_literals
+
+import os
+
 from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator
 from django.db import models
+from django.dispatch import receiver
 
 
 class UserProfile(models.Model):
@@ -38,6 +42,38 @@ class Certificate(models.Model):
 
     def get_title(self):
         return self.title
+
+
+@receiver(models.signals.post_delete, sender=Certificate)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    """
+    Deletes file from filesystem
+    when corresponding `MediaFile` object is deleted.
+    """
+    if instance.template:
+        if os.path.isfile(instance.template.path):
+            os.remove(instance.template.path)
+
+
+@receiver(models.signals.pre_save, sender=Certificate)
+def auto_delete_file_on_change(sender, instance, **kwargs):
+    """
+    Deletes old file from filesystem
+    when corresponding `MediaFile` object is updated
+    with new file.
+    """
+    if not instance.pk:
+        return False
+
+    try:
+        old_file = Certificate.objects.get(pk=instance.pk).template
+    except Certificate.DoesNotExist:
+        return False
+
+    new_file = instance.template
+    if not old_file == new_file:
+        if os.path.isfile(old_file.path):
+            os.remove(old_file.path)
 
 
 class Event(models.Model):

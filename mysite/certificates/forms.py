@@ -26,7 +26,7 @@ class UserForm(forms.ModelForm):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['first_name', 'last_name', 'dob', 'college', 'email', 'contact_number']
+        fields = ['first_name', 'last_name', 'dob', 'college',  'contact_number']
 
 
 class CertificateForm(forms.ModelForm):
