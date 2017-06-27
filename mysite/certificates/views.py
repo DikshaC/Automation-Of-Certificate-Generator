@@ -8,7 +8,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from mysite.mysite import settings
+from mysite import settings
 from .forms import *
 from .models import *
 from . import functions
@@ -68,7 +68,7 @@ def profile(request):
             user.first_name = form.cleaned_data['first_name']
             user.last_name = form.cleaned_data['last_name']
             user.username = form.cleaned_data['username']
-            user.email = form.cleaned_data['email']
+            #user.email = form.cleaned_data['email']
             user.save()
             messages.success(request, 'Your proflie was successfully updated!')
             return redirect('profile')
