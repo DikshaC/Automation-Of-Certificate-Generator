@@ -9,10 +9,18 @@
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div><br>
-<b>  Instructions for uploading csv file:</b>
+<b>  Format of the .csv file for adding users:</b>
 <pre style="overflow:auto">
-    1. Upload users in the form of csv file.
-    2. The first line of csv file should be name of organised event in which want to add participant.
-    3. From second line sequence like- "first name";"last name";"email id";"date of birth";"college name";"user type".
+    1.  First line of the file should be organised event name (without any inverted commas) in which participants
+        have to be added.
+    2.  Second line onwards,rows would contain participants's basic information in the sequence mentioned below
+        (with inverted commas and semi-colons):
+
+        "first name";"last_name";"email id";"date of birth";"college name";"contact number";user type
+
+        (Strictly follow the above mentioned sequence in the csv file)
+    3.  Select the csv file using "Choose File" option above and click submit.
+    4.  Participants would be added to their respective organised events along with their basic information.
+
 </pre>
 {% endblock %}
