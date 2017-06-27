@@ -8,7 +8,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from mysite.mysite import settings
+from mysite import settings
 from .forms import *
 from .models import *
 from . import functions
@@ -363,7 +363,7 @@ def preview(request):
     event = Event.objects.get(certificate=certificate)
 
     filename, path_folder = functions.unzip_folder(certificate)
-    pdf_filename = view_certificate(filename, path_folder, event)
+    pdf_filename = functions.preview_certificate(filename, path_folder, event)
 
     path_file = os.path.join(path_folder, pdf_filename)
     with open(path_file, 'rb') as pdf:

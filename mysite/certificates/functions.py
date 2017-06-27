@@ -147,6 +147,7 @@ def read_csv(file):
             add_user_profile(first_name, last_name, email, dob, college, contact_number)
 
         user = UserProfile.objects.get(email=email)
+        organised_event.participants.add(user)
         add_user_certificate_info(user, organised_event, user_type)
 
     filename = os.path.basename(file)
@@ -261,7 +262,8 @@ def create_certificate(latex_template, participant, path_folder, organised_event
     file.close()
 
     content_tex = content.safe_substitute(name=participant.first_name+" "+participant.last_name,
-                                          eventName=organised_event.event.name, qrcode=qrcode,
+                                          event_name=organised_event.event.name, qrcode=qrcode,
+                                          link_qrcode=link_qrcode,
                                           start_date=organised_event.start_date,
                                           end_date=organised_event.end_date,num_days=organised_event.num_of_days,
                                           user_type=user_info.user_type)
@@ -300,13 +302,8 @@ def preview_certificate(latex_template, path_folder, event):
     print(file)
     file.close()
 
-    user = UserProfile.objects.get(first_name="Diksha")
-    oe = OrganisedEvent.objects.get(event=Event.objects.get(name="test"))
-
-    link_qrcode, qrcode=generate_qrcode(user,oe)
-
-    content_tex = content.safe_substitute(name="testFirstName" + " " + "testLastName",
-                                          qrcode=qrcode, link_qrcode=link_qrcode,
+    content_tex = content.safe_substitute(name="testFirstName"+" "+"testLastName",
+                                          qrcode="testQrcode0123", link_qrcode="www.fossee.in/testPreview",
                                           start_date="2017-03-30",
                                           end_date="2017-03-31", num_days=1,
                                           user_type="testParticipant")

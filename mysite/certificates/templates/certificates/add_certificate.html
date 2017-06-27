@@ -18,8 +18,23 @@
             </div>
 <b>  Instructions for uploading template:</b>
 <pre style="overflow:auto">
-    1. Upload template in zip file.
-    2. The name of zip file should same as Latex template file.
-    3. Enter variables to be replaced by $var_name.
+    1.  Template must be a .zip file.
+    2.  It should contain all the relevant pictures and files along with the latex (.tex) file.
+    3.  The latex (.tex) file's name must be the same as zipped (.zip) file name.
+    4.  While generating certificate(.pdf) for a participant, latex file has some variables which would be
+        replaced with the details of the participant.
+    5.  The variables available are:
+        a)name
+        b)event_name
+        c)qrcode
+        d)link_qrcode [the qrcode image]
+        e)start_date
+        f)end_date
+        g)num_days
+        h)user_type
+    6.  All the variables in the .tex file should start with $ sign.
+    7.  Any number of variables from above can be added(starting with $) in .tex file (not necesssary to add all)
+    8.  Upload the zipped file (.zip) and Click on Submit button.
+    9.  The file would be added and you can preview the uploaded file in 'view certificates' tab.
 </pre>
 {% endblock %}
