@@ -70,9 +70,12 @@ def profile(request):
             user.username = form.cleaned_data['username']
             user.email = form.cleaned_data['email']
             user.save()
+            messages.success(request, 'Your proflie was successfully updated!')
             return redirect('profile')
         else:
-            return render(request, 'certificates/my_profile.html', {'form': form})
+            messages.error(request, 'Choose another username or email!')
+            return redirect('profile')
+
     else:
         form = UserForm(initial={'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email,
                                  'username': user.username})
@@ -104,6 +107,7 @@ def add_user_profile(request):
             form = AddUserForm()
             return render(request, "certificates/add_modelform.html", {'form': form})
         else:
+            messages.error(request, 'User not added, try again!')
             return render(request, "certificates/add_modelform.html", {'form': form})
     else:
         form = AddUserForm()
@@ -137,7 +141,10 @@ def edit_user_profile(request):
             user.college = form.cleaned_data['college']
             user.contact_number = form.cleaned_data['contact_number']
             user.save()
-            messages.success(request, 'User updated successfully !')
+            messages.success(request, 'User information updated successfully !')
+            return redirect('view_user_profile')
+        else:
+            messages.success(request, 'Participant information not updated, try again!')
             return redirect('view_user_profile')
 
     else:
@@ -169,12 +176,12 @@ def add_certificate(request):
             functions.add_certificate(file, form.cleaned_data['title'])
             messages.success(request, 'Certificate ' + form.cleaned_data['title'] + ' added successfully! Add next')
             form = CertificateForm()
-            return render(request, "certificates/add_modelform.html", {'form': form})
+            return render(request, "certificates/add_certificate.html", {'form': form})
         else:
-            return render(request, "certificates/add_modelform.html", {'form': form})
+            return render(request, "certificates/add_certificate.html", {'form': form})
     else:
         form = CertificateForm()
-        return render(request, "certificates/add_modelform.html", {'form': form})
+        return render(request, "certificates/add_certificate.html", {'form': form})
 
 
 def edit_certificate(request):

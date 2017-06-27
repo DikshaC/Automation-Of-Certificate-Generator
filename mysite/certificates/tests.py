@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
+import datetime
 from django.test import TestCase
 from .functions import *
 
@@ -55,7 +57,6 @@ class TestUserCertificateInfo(TestCase):
         user_type = UserType(name="test")
         user_type.save()
         self.user_type=user_type.name
-
 
     def test_addUserCertificateInfo(self):
         user_info = add_user_certificate_info(self.user, self.organised_event, [self.user_type])

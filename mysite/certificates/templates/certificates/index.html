@@ -1,92 +1,10 @@
-{% extends 'header.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Automation of certificate</title>
+</head>
+<body>
 
-    {% block body%}
-			<div class="row">
-                <div class="col-xl-3 col-sm-6 mb-3">
-                    <div class="card card-inverse card-primary o-hidden h-100">
-                        <div class="card-block">
-                              <div class="card-block-icon">
-                                <i class="fa fa-fw fa-list"></i>
-                            </div>
-                            <div class="mr-5">
-                                Users
-                            </div>
-                        </div>
-                        <a href="{% url 'add_user_profile' %}" class="card-footer clearfix small z-1">
-                            <span class="float-left">Add Users</span>
-                            <span class="float-right"><i class="fa fa-angle-right"></i></span>
-                        </a>
-
-                        <a href="{% url 'view_user_profile' %}" class="card-footer clearfix small z-1">
-                            <span class="float-left">View Users</span>
-                            <span class="float-right"><i class="fa fa-angle-right"></i></span>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-sm-6 mb-3">
-                    <div class="card card-inverse card-success o-hidden h-100">
-                        <div class="card-block">
-                            <div class="card-block-icon">
-                                <i class="fa fa-fw fa-list"></i>
-                            </div>
-                            <div class="mr-5">
-                                Certificate
-                            </div>
-                        </div>
-                        <a href="{% url 'add_certificate' %}" class="card-footer clearfix small z-1">
-                            <span class="float-left">Add Certificate</span>
-                            <span class="float-right"><i class="fa fa-angle-right"></i></span>
-                        </a>
-                        <a href="{% url 'view_certificate' %}" class="card-footer clearfix small z-1">
-                            <span class="float-left">View Certificate</span>
-                            <span class="float-right"><i class="fa fa-angle-right"></i></span>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-sm-6 mb-3">
-                    <div class="card card-inverse card-warning o-hidden h-100">
-                        <div class="card-block">
-                            <div class="card-block-icon">
-                                <i class="fa fa-fw fa-list"></i>
-                            </div>
-                            <div class="mr-5">
-                                Events
-                            </div>
-                        </div>
-                        <a href="{% url 'add_event' %}" class="card-footer clearfix small z-1">
-                            <span class="float-left">Add Event</span>
-                            <span class="float-right"><i class="fa fa-angle-right"></i></span>
-                        </a>
-
-                        <a href="{% url 'view_event' %}" class="card-footer clearfix small z-1">
-                            <span class="float-left">View Events</span>
-                            <span class="float-right"><i class="fa fa-angle-right"></i></span>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-sm-6 mb-3">
-                    <div class="card card-inverse card-danger o-hidden h-100">
-                        <div class="card-block">
-                            <div class="card-block-icon">
-                                <i class="fa fa-fw fa-list"></i>
-                            </div>
-                            <div class="mr-5">
-                                Organised Events
-                            </div>
-                        </div>
-                        <a href="{% url 'organise_event' %}" class="card-footer clearfix small z-1">
-                            <span class="float-left">Organise Event</span>
-                            <span class="float-right"><i class="fa fa-angle-right"></i></span>
-                        </a>
-                        <a href="{% url 'view_organised_event' %}" class="card-footer clearfix small z-1">
-                            <span class="float-left">View Organised Event</span>
-                            <span class="float-right"><i class="fa fa-angle-right"></i></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-					any content here<br>
-
-            </div>
-
-       {% endblock %}
+</body>
+</html>
