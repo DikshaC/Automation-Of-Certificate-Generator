@@ -1,0 +1,18 @@
+
+{% block body %}
+<h4>Verify User:</h4>
+    {{ user.first_name }}
+{% endblock %}
+</div>
+
+
+
+{% block body %}
+    <div align="center">
+        <form method="POST" style="border:solid 3px;width:500px">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn primary">Submit</button>
+        </form>
+    </div>
+    {% endblock %}
