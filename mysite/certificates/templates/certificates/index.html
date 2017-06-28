@@ -1,10 +1,19 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Automation of certificate</title>
+    <title>Automation of Certificate Generator</title>
+     <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
 </head>
 <body>
 
+   <br> <a href="{% url 'login' %}" style="text-decoration:none;font-size:18px;color:blue"><b> Login</b></a>
+    <a href="{% url 'register' %}" style="text-decoration:none;font-size:18px;color:blue"><b> Register</b></a><br>
+     <h3><b>Welcome to Automation Of Certificate Generator</b></h3><br>
+
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+   <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
 </body>
 </html>

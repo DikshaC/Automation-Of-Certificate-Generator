@@ -152,7 +152,7 @@ def read_csv(file):
 
     filename = os.path.basename(file)
     os.chdir(path)
-    os.remove(filename)
+    os.remove('abc.csv')
 
 
 def generate_qrcode(user, organised_event):
@@ -228,14 +228,18 @@ def send_email(participants, certificate, organised_event):
     :return: None
     """
     latex_file, path_folder = unzip_folder(certificate)
-
+    status = []
     for participant in participants:
         participant = participant
         create_certificate(latex_file, participant, path_folder, organised_event)
         email = EmailMessage('Certificate', 'Send Certificate', to=[participant.email])
         email_obj = email.send()
+        if email_obj:
+            status.append(1)
+        else:
+            status.append(0)
         clean_certificate_files(participant.first_name, path_folder)
-
+    return status
 
 def create_certificate(latex_template, participant, path_folder, organised_event):
     """

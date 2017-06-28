@@ -15,6 +15,10 @@ from . import functions
 from django.contrib.auth import authenticate, logout, login as LOGIN, update_session_auth_hash
 
 
+def index(request):
+    return render(request, 'certificates/index.html')
+
+
 @login_required(login_url='/account')
 def home(request):
     if request.user.is_authenticated():
@@ -31,7 +35,7 @@ def login(request):
                                 password=form.cleaned_data['password'])
             if user is not None:
                 LOGIN(request, user)
-                return redirect('home/')
+                return redirect('/account/home')
             else:
                 return render(request, 'certificates/login.html', {'form': form})
         else:
@@ -68,7 +72,7 @@ def profile(request):
             user.first_name = form.cleaned_data['first_name']
             user.last_name = form.cleaned_data['last_name']
             user.username = form.cleaned_data['username']
-            #user.email = form.cleaned_data['email']
+            user.email = form.cleaned_data['email']
             user.save()
             messages.success(request, 'Your proflie was successfully updated!')
             return redirect('profile')
@@ -100,7 +104,7 @@ def add_user_profile(request):
         form = AddUserForm(request.POST, request.FILES)
         if form.is_valid():
             csv = request.FILES['csvFile']
-            path = default_storage.save('detail.csv', ContentFile(csv.read()))
+            path = default_storage.save('abc.csv', ContentFile(csv.read()))
             tmp_file = os.path.join(settings.MEDIA_ROOT, path)
             functions.read_csv(tmp_file)
             messages.success(request, 'User added successfully! Add next')
@@ -225,8 +229,9 @@ def send_email(request):
     organised_event = OrganisedEvent.objects.get(pk=pk)
     participants = organised_event.get_participants()
     certificate = organised_event.event.certificate
-    functions.send_email(participants, certificate, organised_event)
-    return redirect('/account/home')
+    status = functions.send_email(participants, certificate, organised_event)
+    context = {"status": status}
+    return render(request, 'certificates/show_participant.html', context)
 
 
 def show_participant(request):
