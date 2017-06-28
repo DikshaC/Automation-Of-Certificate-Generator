@@ -295,7 +295,7 @@ def clean_certificate_files(first_name, path):
     os.remove(first_name + '.tex')
 
 
-def preview_certificate(latex_template, path_folder, event):
+def preview_certificate(latex_template, path_folder):
     latex_file = os.path.join(path_folder, latex_template)
     file = open(latex_file, "r")
     content = Template(file.read())
@@ -303,6 +303,7 @@ def preview_certificate(latex_template, path_folder, event):
     file.close()
 
     content_tex = content.safe_substitute(name="testFirstName"+" "+"testLastName",
+                                          event_name="testEvent",
                                           qrcode="testQrcode0123", link_qrcode="www.fossee.in/testPreview",
                                           start_date="2017-03-30",
                                           end_date="2017-03-31", num_days=1,

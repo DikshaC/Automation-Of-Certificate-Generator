@@ -67,3 +67,7 @@ class VerificationForm(forms.Form):
 
 class AddUserForm(forms.Form):
     csvFile=forms.FileField(label=mark_safe("<strong>CSV File</strong>"))
+    '''class Meta:
+        model = OrganisedEvent
+        fields = ['organised_event']
+    '''
