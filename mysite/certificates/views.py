@@ -271,12 +271,12 @@ def add_event(request):
                                    form.cleaned_data['creator'])
             messages.success(request, 'Event '+form.cleaned_data['name']+' added successfully! Add next')
             form = EventForm()
-            return render(request, "certificates/add_modelform.html", {'form': form})
+            return render(request, "certificates/add_event.html", {'form': form})
         else:
-            return render(request, "certificates/add_modelform.html", {'form': form})
+            return render(request, "certificates/add_event.html", {'form': form})
     else:
         form = EventForm()
-        return render(request, "certificates/add_modelform.html", {'form': form})
+        return render(request, "certificates/add_event.html", {'form': form})
 
 
 def edit_event(request):
@@ -319,12 +319,12 @@ def organise_event(request):
                                      form.cleaned_data['place'], form.cleaned_data['participants'])
             messages.success(request, 'Organised Event added successfully! Add next')
             form = OrganisedEventForm()
-            return render(request, "certificates/add_modelform.html", {'form': form})
+            return render(request, "certificates/add_organised_event.html", {'form': form})
         else:
-            return render(request, "certificates/add_modelform.html", {'form': form})
+            return render(request, "certificates/add_organised_event.html", {'form': form})
     else:
         form = OrganisedEventForm()
-        return render(request, "certificates/add_modelform.html", {'form': form})
+        return render(request, "certificates/add_organised_event.html", {'form': form})
 
 
 def edit_organised_event(request):
