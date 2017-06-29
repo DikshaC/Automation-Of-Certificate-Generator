@@ -6,24 +6,28 @@
 
     <div class="table-responsive">
     <table  border="1px solid black" class="table table-bordered"  style="width:50%">
-        {% i=0 %}
-        {% for participant in participants %}
+
+        {% for participant,status in list1 %}
+            {{ status.1 }}
         <tr> <th>{{ participant.first_name }}</th>
             <td>
-                {% if {{status[i]}} %}
-                    <a href="#" style="text-decoration:none;color:green">Send</a>
-                {% endif %}
+                {% if status == 1 %}
+                    <font color="green">Mail Sent!</font>
+
                 {% else %}
-                 <a href="#" style="text-decoration:none;color:red">Unsend</a>
-                {% endelse%}
-                {% i=i+1 %}
+                 <a href="{% url 'send_email' %}?oe_pk={{organised_event.pk}}&participant_pk={{ participant.pk }}&type=Individual" style="text-decoration: none; color:red">Send Mail</a>
+                {% endif %}
+
 
 
             </td></tr><br>
         {% endfor %}
+
+
     </table>
     </div>
-    <button type="button" value="Send" class="btn btn-primary" onclick="location.href='{% url 'send_email' %}?oe_pk={{organised_event.pk}}'" style="text-decoration:none;font-size:20px">Send</button>
+
+    <button type="button" value="Send" class="btn btn-primary" onclick="location.href='{% url 'send_email' %}?oe_pk={{organised_event.pk}}&type=All'" style="text-decoration:none;font-size:20px">Send All</button>
 
     {% endblock %}
 

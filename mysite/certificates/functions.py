@@ -228,18 +228,19 @@ def send_email(participants, certificate, organised_event):
     :return: None
     """
     latex_file, path_folder = unzip_folder(certificate)
-    status = []
     for participant in participants:
         participant = participant
         create_certificate(latex_file, participant, path_folder, organised_event)
+        user_info = UserCertificateInfo.objects.get(user=participant,organised_event=organised_event)
         email = EmailMessage('Certificate', 'Send Certificate', to=[participant.email])
         email_obj = email.send()
         if email_obj:
-            status.append(1)
+            user_info.email_sent_status = True
         else:
-            status.append(0)
+            user_info.email_sent_status = False
+        user_info.save()
         clean_certificate_files(participant.first_name, path_folder)
-    return status
+
 
 def create_certificate(latex_template, participant, path_folder, organised_event):
     """

@@ -227,10 +227,25 @@ def send_certificate(request):
 def send_email(request):
     pk = request.GET.get('oe_pk')
     organised_event = OrganisedEvent.objects.get(pk=pk)
-    participants = organised_event.get_participants()
     certificate = organised_event.event.certificate
-    status = functions.send_email(participants, certificate, organised_event)
-    context = {"status": status}
+
+    if(request.GET.get('type')=="All"):
+        participants = organised_event.get_participants()
+
+    else:
+        participant_id = request.GET.get("participant_pk")
+        participants = UserProfile.objects.filter(pk=participant_id)
+
+    functions.send_email(participants, certificate, organised_event)
+    participants = organised_event.get_participants()
+    context = {"participants": participants}
+    user_info_list = []
+    for participant in participants:
+        user_info = UserCertificateInfo.objects.get(user=participant, organised_event=organised_event)
+        user_info_list.append(user_info.email_sent_status)
+    print(user_info_list)
+
+    context["list1"] = zip(participants, user_info_list)
     return render(request, 'certificates/show_participant.html', context)
 
 
@@ -239,7 +254,13 @@ def show_participant(request):
     organised_event = OrganisedEvent.objects.get(pk=pk)
     participants = organised_event.get_participants()
     context = {"participants": participants, "organised_event": organised_event}
+    user_info_list = []
+    for participant in participants:
+        user_info = UserCertificateInfo.objects.get(user=participant,organised_event=organised_event)
+        user_info_list.append(user_info.email_sent_status)
+    context["list1"] = zip(participants, user_info_list)
     return render(request, 'certificates/show_participant.html', context)
+
 
 
 def add_event(request):
