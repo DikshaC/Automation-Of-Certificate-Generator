@@ -13,9 +13,8 @@
 
 {% for certificate in object_list %}
         <tr><th><a href="{% url 'edit_certificate' %}?title={{certificate.title}}" style="text-decoration:none"> {{ certificate.title }} </a></th>
-            <td>   <a href="{% url 'preview' %}?title={{certificate.title}}" style="color:black;text-decoration:none"><u>Preview</u></a></td>
-
-                {% endfor %}</tr><br>
+            <td>   <a href="{% url 'preview' %}?title={{certificate.title}}" style="color:black"><u>Preview</u></a></td>
+            {% endfor %}</tr><br>
 
     </table>
 </div>
