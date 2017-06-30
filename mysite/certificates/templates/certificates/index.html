@@ -7,11 +7,15 @@
      <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
 
 </head>
-<body>
+<body style="background-color:#e6e6ff">
 
-   <br> <a href="{% url 'login' %}" style="text-decoration:none;font-size:18px;color:blue"><b> Login</b></a>
-    <a href="{% url 'register' %}" style="text-decoration:none;font-size:18px;color:blue"><b> Register</b></a><br>
-     <h3><b>Welcome to Automation Of Certificate Generator</b></h3><br>
+  <div align="center" style="margin-top: 15%">
+     <h1><b>Welcome to Automation Of Certificate Generator</b></h1><br>
+      <h5><b> Helps you create and organise events, make digital certificates and send them to participants</b></h5>
+      <br>Already a member?<a href="{% url 'login' %}" style="text-decoration:none;font-size:18px;color:blue"><b> Login</b></a><br>
+      <font size="2px">OR</font> <br>
+    Create account.<a href="{% url 'register' %}" style="text-decoration:none;font-size:18px;color:blue"><b> Register</b></a><br>
+  </div>
 
     <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
    <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>

@@ -2,20 +2,19 @@
 {% extends 'header.html' %}
     {% block body %}
 
-    <h4> List of Participants in Organised Events:</h4>
+    <h4> List of Participants in {{ organised_event.event.name }}:</h4>
 
     <div class="table-responsive">
     <table  border="1px solid black" class="table table-bordered"  style="width:50%">
 
         {% for participant,status in list1 %}
-            {{ status.1 }}
         <tr> <th>{{ participant.first_name }}</th>
             <td>
                 {% if status == 1 %}
                     <font color="green">Mail Sent!</font>
 
                 {% else %}
-                 <a href="{% url 'send_email' %}?oe_pk={{organised_event.pk}}&participant_pk={{ participant.pk }}&type=Individual" style="text-decoration: none; color:red">Send Mail</a>
+                    <a href="{% url 'send_email' %}?oe_pk={{organised_event.pk}}&participant_pk={{ participant.pk }}&type=Individual" style="text-decoration: none; color:red"><u>Send Mail</u></a>
                 {% endif %}
 
 
@@ -27,7 +26,7 @@
     </table>
     </div>
 
-    <button type="button" value="Send" class="btn btn-primary" onclick="location.href='{% url 'send_email' %}?oe_pk={{organised_event.pk}}&type=All'" style="text-decoration:none;font-size:20px">Send All</button>
+    <button type="button" value="Send" class="btn btn-primary" onclick="location.href='{% url 'send_email' %}?oe_pk={{organised_event.pk}}&type=All'">Send All</button>
 
     {% endblock %}
 

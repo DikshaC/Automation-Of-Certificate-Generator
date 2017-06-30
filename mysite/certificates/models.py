@@ -75,6 +75,9 @@ def auto_delete_file_on_change(sender, instance, **kwargs):
         if os.path.isfile(old_file.path):
             os.remove(old_file.path)
 
+    else:
+        os.remove(old_file.path)
+
 
 class Event(models.Model):
     name = models.CharField(max_length=100)
