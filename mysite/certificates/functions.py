@@ -23,7 +23,12 @@ def add_user_profile(first_name, last_name, email, dob, college, contact_number)
     """
     user = UserProfile(first_name=first_name, last_name=last_name, email=email, dob=dob, college=college,
                        contact_number=contact_number)
-    user.save()
+    try:
+        user.full_clean()
+        user.save()
+    except:
+        raise ValidationError("Please check the format of csv file and try again!")
+
     return user
 
 
@@ -123,20 +128,26 @@ def read_csv(file):
             first_name,last_name,username,password,email,user_type(s)[separated by ',' if more than 1 type ],DOB,college
     :return: Returns nothing
     """
-    path = settings.MEDIA_ROOT
-    file1 = open(file, "r")
-    first_line = file1.readline().strip()
-    file1.close()
-
-    event = Event.objects.get(name=first_line)
-    organised_event = OrganisedEvent.objects.get(event=event)
-
-    reader = csv.reader(open(file), delimiter=";")
-    csv_file = list(reader)[1:]
     try:
+        path = settings.MEDIA_ROOT
+        file1 = open(file, "r")
+        first_line = file1.readline().strip()
+        file1.close()
+
+        event = Event.objects.get(name=first_line)
+        organised_event = OrganisedEvent.objects.get(event=event)
+
+
+        reader = csv.reader(open(file), delimiter=";")
+        csv_file = list(reader)[1:]
+
         for line in csv_file:
             email = line[2]
             user_type = line[6].split(',')
+            if not UserType.objects.filter(name=user_type[0]):
+                type=UserType(name=user_type[0])
+                type.save()
+
             if not UserProfile.objects.filter(email=email):
                 first_name = line[0]
                 last_name = line[1]
@@ -148,12 +159,16 @@ def read_csv(file):
             user = UserProfile.objects.get(email=email)
             organised_event.participants.add(user)
             add_user_certificate_info(user, organised_event, user_type)
+            filename = os.path.basename(file)
+            os.chdir(path)
+            os.remove(filename)
     except:
+        filename = os.path.basename(file)
+        os.chdir(path)
+        os.remove(filename)
         return "list_index_error"
 
-    filename = os.path.basename(file)
-    os.chdir(path)
-    os.remove('abc.csv')
+
 
 
 def generate_qrcode(user, organised_event):
@@ -280,6 +295,7 @@ def create_certificate(latex_template, participant, path_folder, organised_event
     user_file.close()
 
     os.chdir(path_folder)
+
 
     cmd = ['timeout', '5', 'pdflatex', '-shell-escape', user_latex_file]
     proc = subprocess.Popen(cmd)

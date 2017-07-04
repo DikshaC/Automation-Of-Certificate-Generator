@@ -119,10 +119,10 @@ def add_user_profile(request):
             else:
                 messages.success(request, 'User added successfully! Add next')
                 form = AddUserForm()
-            return render(request, "certificates/add_modelform.html", {'form': form})
+            return render(request, "certificates/add_user.html", {'form': form})
         else:
             messages.error(request, 'User not added, try again!')
-            return render(request, "certificates/add_modelform.html", {'form': form})
+            return render(request, "certificates/add_user.html", {'form': form})
     else:
         form = AddUserForm()
         return render(request, "certificates/add_user.html", {'form': form})
@@ -206,11 +206,7 @@ def edit_certificate(request):
 
 
 def view_certificate(request):
-    user = request.user
-    events = Event.objects.filter(creator=user)
-    certificate = []
-    for event in events:
-        certificate.append(event.certificate)
+    certificate = Certificate.objects.all()
     context = {"object_list": certificate}
     return render(request, 'certificates/view_certificate.html', context)
 
@@ -314,8 +310,9 @@ def edit_event(request):
 
 
 def view_event(request):
-    user = request.user
-    event=Event.objects.filter(creator=user)
+    #user = request.user
+    #event=Event.objects.filter(creator=user)
+    event = Event.objects.all()
     context = {"object_list": event}
     return render(request, 'certificates/view_event.html', context)
 
@@ -372,14 +369,15 @@ def edit_organised_event(request):
 
 
 def view_organised_event(request):
-    user = request.user
+    '''user = request.user
     events = Event.objects.filter(creator=user)
     organised_event = []
     for event in list(events):
         organised_events = OrganisedEvent.objects.filter(event=event)
         for organisedEvent in organised_events:
             organised_event.append(organisedEvent)
-
+    '''
+    organised_event = OrganisedEvent.objects.all()
     context = {"object_list": organised_event}
     return render(request, 'certificates/view_organised_event.html', context)
 
