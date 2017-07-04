@@ -111,7 +111,6 @@ def add_user_certificate_info(user, organised_event, user_type):
     return user_info
 
 
-#TODO: add organised event primary key things here
 def read_csv(file):
     """
     Reads a csv file to add users in the database for a particular event.
@@ -132,12 +131,18 @@ def read_csv(file):
     event = Event.objects.get(name=first_line)
     organised_event = OrganisedEvent.objects.get(event=event)
 
+
     reader = csv.reader(open(file), delimiter=";")
     csv_file = list(reader)[1:]
 
     for line in csv_file:
         email = line[2]
         user_type = line[6].split(',')
+        if not UserType.objects.filter(name=user_type):
+            type = UserType(name=user_type)
+            type.save()
+            user_type = list(type.name)
+
         if not UserProfile.objects.filter(email=email):
             first_name = line[0]
             last_name = line[1]
@@ -152,7 +157,7 @@ def read_csv(file):
 
     filename = os.path.basename(file)
     os.chdir(path)
-    os.remove('abc.csv')
+    os.remove(filename)
 
 
 def generate_qrcode(user, organised_event):
@@ -189,9 +194,9 @@ def generate_qrcode(user, organised_event):
                 uniqueness = True
 
     link_qrcode = 'www.fossee.in/account/verify/'+qrcode
-    #user_info = UserCertificateInfo.objects.get(user=user, organised_event=organised_event)
-    #user_info.qrcode = qrcode
-    #user_info.save()
+    user_info = UserCertificateInfo.objects.get(user=user, organised_event=organised_event)
+    user_info.qrcode = qrcode
+    user_info.save()
     return link_qrcode,qrcode
 
 
@@ -279,9 +284,11 @@ def create_certificate(latex_template, participant, path_folder, organised_event
     user_file.close()
 
     os.chdir(path_folder)
-    cmd = ['pdflatex', '-shell-escape', user_latex_file]
+
+    cmd = ['timeout', '5', 'pdflatex', '-shell-escape', user_latex_file]
     proc = subprocess.Popen(cmd)
     proc.communicate()
+
     return participant.first_name + '.pdf'
 
 
@@ -301,6 +308,12 @@ def clean_certificate_files(first_name, path):
 
 
 def preview_certificate(latex_template, path_folder):
+    """
+
+    :param latex_template:
+    :param path_folder:
+    :return:
+    """
     latex_file = os.path.join(path_folder, latex_template)
     file = open(latex_file, "r")
     content = Template(file.read())
