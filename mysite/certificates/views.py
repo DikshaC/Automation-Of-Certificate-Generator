@@ -65,6 +65,9 @@ def register(request):
                         first_name=form.cleaned_data['first_name'], last_name=form.cleaned_data['last_name'])
             user.save()
             return redirect('/account/home')
+        else:
+            form = RegistrationForm()
+            return render(request, "certificates/register.html", {'form': form})
     else:
         form = RegistrationForm()
         return render(request, "certificates/register.html", {'form': form})
@@ -100,6 +103,10 @@ def change_password(request):
             update_session_auth_hash(request, user)  # Important!
             messages.success(request, 'Your password was successfully updated!')
             return redirect('profile')
+        else:
+            messages.error(request, 'Password not updated! try again')
+            form = PasswordChangeForm(request.user)
+            return render(request, 'certificates/add_modelform.html', {'form': form})
     else:
         form = PasswordChangeForm(request.user)
     return render(request, 'certificates/add_modelform.html', {'form': form})
@@ -119,10 +126,10 @@ def add_user_profile(request):
             else:
                 messages.success(request, 'User added successfully! Add next')
                 form = AddUserForm()
-            return render(request, "certificates/add_modelform.html", {'form': form})
+            return render(request, "certificates/add_user.html", {'form': form})
         else:
             messages.error(request, 'User not added, try again!')
-            return render(request, "certificates/add_modelform.html", {'form': form})
+            return render(request, "certificates/add_user.html", {'form': form})
     else:
         form = AddUserForm()
         return render(request, "certificates/add_user.html", {'form': form})
@@ -199,6 +206,11 @@ def edit_certificate(request):
             certificate.save()
             messages.success(request, 'Certificate updated successfully !')
             return redirect('view_certificate')
+        else:
+            messages.error(request, 'certificate not updated! try again')
+            form = CertificateForm(initial={'title': title, 'template': certificate.template})
+            return render(request, 'certificates/edit_delete_modelform.html', {'form': form})
+
     else:
         form = CertificateForm(initial={'title': title, 'template': certificate.template})
         context = {'certificate': certificate, 'form': form, 'type': "certificate"}
@@ -206,12 +218,12 @@ def edit_certificate(request):
 
 
 def view_certificate(request):
-    user = request.user
+    '''user = request.user
     events = Event.objects.filter(creator=user)
     certificate = []
     for event in events:
-        certificate.append(event.certificate)
-    context = {"object_list": certificate}
+        certificate.append(event.certificate)'''
+    context = {"object_list": Certificate.objects.all()}
     return render(request, 'certificates/view_certificate.html', context)
 
 
@@ -243,8 +255,6 @@ def send_email(request):
     try:
         functions.send_email(participants, certificate, organised_event)
     except:
-        messages.error(request,"List index error")
-        print("error")
         participants = organised_event.get_participants()
         context = {"participants": participants, "organised_event": organised_event}
         user_info_list = []
@@ -253,6 +263,7 @@ def send_email(request):
             user_info_list.append(user_info.email_sent_status)
 
         context["list1"] = zip(participants, user_info_list)
+        messages.success(request, "Mail Sent Successfully!")
         return render(request, 'certificates/show_participant.html', context)
 
     participants = organised_event.get_participants()
@@ -290,6 +301,7 @@ def add_event(request):
             form = EventForm()
             return render(request, "certificates/add_event.html", {'form': form})
         else:
+            messages.error(request, "event not added! try again")
             return render(request, "certificates/add_event.html", {'form': form})
     else:
         form = EventForm()
@@ -307,6 +319,10 @@ def edit_event(request):
             event.save()
             messages.success(request, 'Event updated successfully !')
             return redirect('view_event')
+        else:
+            messages.error(request, 'Event not updated! try again')
+            form = EventForm(initial={'name': name, 'certificate': event.certificate})
+            return render(request, 'certificates/edit_delete_modelform.html', {'form': form})
     else:
         form = EventForm(initial={'name': name, 'certificate': event.certificate})
         context = {'event': event, 'form': form, 'type': "event"}
@@ -314,9 +330,9 @@ def edit_event(request):
 
 
 def view_event(request):
-    user = request.user
-    event=Event.objects.filter(creator=user)
-    context = {"object_list": event}
+    '''user = request.user
+    event=Event.objects.filter(creator=user)'''
+    context = {"object_list": Event.objects.all()}
     return render(request, 'certificates/view_event.html', context)
 
 
@@ -338,6 +354,7 @@ def organise_event(request):
             form = OrganisedEventForm()
             return render(request, "certificates/add_organised_event.html", {'form': form})
         else:
+            messages.error(request, "Organised Event not added! try again")
             return render(request, "certificates/add_organised_event.html", {'form': form})
     else:
         form = OrganisedEventForm()
@@ -360,7 +377,15 @@ def edit_organised_event(request):
             organised_event.save()
             messages.success(request, 'Organised Event updated successfully !')
             return redirect('view_organised_event')
-
+        else:
+            messages.error(request, "Organised Event not updated! try again")
+            form = OrganisedEventForm(initial={'event': organised_event.event, 'start_date': organised_event.start_date,
+                                               'end_date': organised_event.end_date,
+                                               'organiser': organised_event.organiser, 'place': organised_event.place,
+                                               'participants':
+                                                   [participant.pk for participant in
+                                                    organised_event.get_participants()]})
+            return render(request, 'certificates/edit_delete_modelform.html', {'form': form})
     else:
         form = OrganisedEventForm(initial={'event': organised_event.event, 'start_date': organised_event.start_date,
                                            'end_date': organised_event.end_date,
@@ -372,13 +397,14 @@ def edit_organised_event(request):
 
 
 def view_organised_event(request):
-    user = request.user
+    '''user = request.user
     events = Event.objects.filter(creator=user)
     organised_event = []
-    for event in list(events):
+    for event in list():
         organised_events = OrganisedEvent.objects.filter(event=event)
         for organisedEvent in organised_events:
-            organised_event.append(organisedEvent)
+            organised_event.append(organisedEvent)'''
+    organised_event = OrganisedEvent.objects.all()
 
     context = {"object_list": organised_event}
     return render(request, 'certificates/view_organised_event.html', context)
