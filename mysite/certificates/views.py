@@ -112,9 +112,13 @@ def add_user_profile(request):
             csv = request.FILES['csvFile']
             path = default_storage.save('abc.csv', ContentFile(csv.read()))
             tmp_file = os.path.join(settings.MEDIA_ROOT, path)
-            functions.read_csv(tmp_file)
-            messages.success(request, 'User added successfully! Add next')
-            form = AddUserForm()
+            error_message = functions.read_csv(tmp_file)
+            if error_message == "list_index_error":
+                messages.error(request, "Please check the format of csv file and try again!")
+
+            else:
+                messages.success(request, 'User added successfully! Add next')
+                form = AddUserForm()
             return render(request, "certificates/add_modelform.html", {'form': form})
         else:
             messages.error(request, 'User not added, try again!')
@@ -122,19 +126,6 @@ def add_user_profile(request):
     else:
         form = AddUserForm()
         return render(request, "certificates/add_user.html", {'form': form})
-
-
-'''def add_user_profile(request):
-    if request.method == "POST":
-        form = UserProfileForm(request.POST)
-        if form.is_valid():
-            functions.add_user_profile(form.cleaned_data['first_name'], form.cleaned_data['last_name'],
-                                       form.cleaned_data['email'], form.cleaned_data['dob'],
-                                       form.cleaned_data['college'], form.cleaned_data['contact_number'])
-            return redirect('/account/home')
-    else:
-        form = UserProfileForm()
-        return render(request, "certificates/add_modelform.html", {'form': form})'''
 
 
 def edit_user_profile(request):
@@ -146,7 +137,6 @@ def edit_user_profile(request):
         if form.is_valid():
             user.first_name = form.cleaned_data['first_name']
             user.last_name = form.cleaned_data['last_name']
-           # user.email = form.cleaned_data['email']
             user.dob = form.cleaned_data['dob']
             user.college = form.cleaned_data['college']
             user.contact_number = form.cleaned_data['contact_number']
@@ -154,8 +144,11 @@ def edit_user_profile(request):
             messages.success(request, 'User information updated successfully !')
             return redirect('view_user_profile')
         else:
-            messages.success(request, 'Participant information not updated, try again!')
-            return redirect('view_user_profile')
+            messages.error(request, 'Participant information not updated! check fields again!')
+            form = UserProfileForm(initial={'first_name': user.first_name, 'last_name': user.last_name, 'email': email,
+                                            'dob': user.dob, 'college': user.college,
+                                            'contact_number': user.contact_number})
+            return render(request, 'certificates/edit_delete_modelform.html', {'form': form})
 
     else:
         form = UserProfileForm(initial={'first_name': user.first_name, 'last_name': user.last_name, 'email': email,
@@ -181,13 +174,14 @@ def delete_user_profile(request):
 def add_certificate(request):
     if request.method == "POST":
         form = CertificateForm(request.POST, request.FILES)
+        file = request.FILES['template']
         if form.is_valid():
-            file = request.FILES['template']
             functions.add_certificate(file, form.cleaned_data['title'])
             messages.success(request, 'Certificate ' + form.cleaned_data['title'] + ' added successfully! Add next')
             form = CertificateForm()
             return render(request, "certificates/add_certificate.html", {'form': form})
         else:
+            messages.error(request, "Certificate not added!")
             return render(request, "certificates/add_certificate.html", {'form': form})
     else:
         form = CertificateForm()
@@ -235,7 +229,7 @@ def send_email(request):
     organised_event = OrganisedEvent.objects.get(pk=pk)
     certificate = organised_event.event.certificate
 
-    if(request.GET.get('type')=="All"):
+    if request.GET.get('type') == "All":
         participants = organised_event.get_participants()
 
     else:
@@ -244,7 +238,7 @@ def send_email(request):
 
     functions.send_email(participants, certificate, organised_event)
     participants = organised_event.get_participants()
-    context = {"participants": participants,"organised_event":organised_event}
+    context = {"participants": participants, "organised_event": organised_event}
     user_info_list = []
     for participant in participants:
         user_info = UserCertificateInfo.objects.get(user=participant, organised_event=organised_event)
@@ -266,7 +260,6 @@ def show_participant(request):
         user_info_list.append(user_info.email_sent_status)
     context["list1"] = zip(participants, user_info_list)
     return render(request, 'certificates/show_participant.html', context)
-
 
 
 def add_event(request):

@@ -6,13 +6,14 @@ from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator
 from django.db import models
 from django.dispatch import receiver
+from sphinx.quickstart import ValidationError
 
 
 class UserProfile(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
-    contact_number = models.CharField(max_length=10,validators=[MinLengthValidator(10)])
+    contact_number = models.CharField(max_length=10,validators=[MinLengthValidator(10, message="10 digit number only")])
     dob = models.DateField()
     college = models.CharField(max_length=300)
 

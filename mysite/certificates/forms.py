@@ -34,6 +34,11 @@ class CertificateForm(forms.ModelForm):
         model = Certificate
         fields = ['template', 'title']
 
+    def clean_template(self):
+        template = self.cleaned_data['template']
+        if not template.name.endswith('.zip'):
+            raise forms.ValidationError("Only zip file is accepted")
+
 
 class EventForm(forms.ModelForm):
     class Meta:
@@ -65,9 +70,10 @@ class VerificationForm(forms.Form):
     qrcode = forms.CharField(label=mark_safe("<strong>QR Code</strong>"))
 
 
+def validate_file_extension(value):
+    if not value.name.endswith('.csv'):
+        raise forms.ValidationError("Only csv file is accepted")
+
+
 class AddUserForm(forms.Form):
-    csvFile=forms.FileField(label=mark_safe("<strong>CSV File</strong>"))
-    '''class Meta:
-        model = OrganisedEvent
-        fields = ['organised_event']
-    '''
+    csvFile = forms.FileField(label=mark_safe("<strong>CSV File</strong>"), validators=[validate_file_extension])
