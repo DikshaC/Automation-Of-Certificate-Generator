@@ -256,7 +256,7 @@ def send_email(request):
         return render(request, 'certificates/show_participant.html', context)
 
     participants = organised_event.get_participants()
-    context = {"participants": participants, "organised_event": organised_event}
+    context = {"participants": participants,"organised_event":organised_event}
     user_info_list = []
     for participant in participants:
         user_info = UserCertificateInfo.objects.get(user=participant, organised_event=organised_event)
