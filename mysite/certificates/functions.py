@@ -128,8 +128,8 @@ def read_csv(file):
             first_name,last_name,username,password,email,user_type(s)[separated by ',' if more than 1 type ],DOB,college
     :return: Returns nothing
     """
+    path = settings.MEDIA_ROOT
     try:
-        path = settings.MEDIA_ROOT
         file1 = open(file, "r")
         first_line = file1.readline().strip()
         file1.close()
@@ -161,11 +161,11 @@ def read_csv(file):
             add_user_certificate_info(user, organised_event, user_type)
             filename = os.path.basename(file)
             os.chdir(path)
-            os.remove(filename)
+            os.remove('abc.csv')
     except:
         filename = os.path.basename(file)
         os.chdir(path)
-        os.remove(filename)
+        os.remove('abc.csv')
         return "list_index_error"
 
 
