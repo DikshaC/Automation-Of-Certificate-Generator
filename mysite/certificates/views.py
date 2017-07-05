@@ -218,12 +218,8 @@ def edit_certificate(request):
 
 
 def view_certificate(request):
-    '''user = request.user
-    events = Event.objects.filter(creator=user)
-    certificate = []
-    for event in events:
-        certificate.append(event.certificate)'''
-    context = {"object_list": Certificate.objects.all()}
+    certificate = Certificate.objects.all()
+    context = {"object_list": certificate}
     return render(request, 'certificates/view_certificate.html', context)
 
 
@@ -330,9 +326,10 @@ def edit_event(request):
 
 
 def view_event(request):
-    '''user = request.user
-    event=Event.objects.filter(creator=user)'''
-    context = {"object_list": Event.objects.all()}
+    #user = request.user
+    #event=Event.objects.filter(creator=user)
+    event = Event.objects.all()
+    context = {"object_list": event}
     return render(request, 'certificates/view_event.html', context)
 
 
