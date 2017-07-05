@@ -16,7 +16,10 @@ from django.contrib.auth import authenticate, logout, login as LOGIN, update_ses
 
 
 def index(request):
-    return render(request, 'certificates/index.html')
+    if not request.user.is_authenticated():
+        return render(request, 'certificates/index.html')
+    else:
+        return redirect('/account/home')
 
 
 @login_required(login_url='/account')
@@ -28,21 +31,24 @@ def home(request):
 
 
 def login(request):
-    if request.method == "POST":
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            user = authenticate(request, username=form.cleaned_data['username'],
-                                password=form.cleaned_data['password'])
-            if user is not None:
-                LOGIN(request, user)
-                return redirect('/account/home')
+    if not request.user.is_authenticated():
+        if request.method == "POST":
+            form = LoginForm(request.POST)
+            if form.is_valid():
+                user = authenticate(request, username=form.cleaned_data['username'],
+                                    password=form.cleaned_data['password'])
+                if user is not None:
+                    LOGIN(request, user)
+                    return redirect('/account/home')
+                else:
+                    return render(request, 'certificates/login.html', {'form': form})
             else:
                 return render(request, 'certificates/login.html', {'form': form})
         else:
+            form = LoginForm()
             return render(request, 'certificates/login.html', {'form': form})
     else:
-        form = LoginForm()
-        return render(request, 'certificates/login.html', {'form': form})
+        return redirect('/account/home')
 
 
 def logout_user(request):
@@ -238,7 +244,7 @@ def send_email(request):
 
     functions.send_email(participants, certificate, organised_event)
     participants = organised_event.get_participants()
-    context = {"participants": participants}
+    context = {"participants": participants,"organised_event":organised_event}
     user_info_list = []
     for participant in participants:
         user_info = UserCertificateInfo.objects.get(user=participant, organised_event=organised_event)

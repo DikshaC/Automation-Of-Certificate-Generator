@@ -7,12 +7,19 @@
 \usepackage{geometry}
 \usepackage{chancery}
 \usepackage[T1]{fontenc}
+\usepackage{pstricks}
+
+\usepackage{epspdf}
+
+
+
 %% package to execute bash commands
 %% \usepackage{bashful}
 
 %% generate QR code
 \usepackage{pst-barcode}
 \usepackage{auto-pst-pdf}
+\usepackage{pst-all}
 
 \geometry{tmargin=.2cm,bmargin=.2cm,
   lmargin=.2cm, rmargin=.2cm}
@@ -42,7 +49,7 @@
 \textcolor{black}{\textsc{Certificate of Participation}}
 \hspace{10cm}
 \textcolor{black!100}{\scriptsize  This is to certify that}\\
-{\textcolor{blue} {~~~~~~~~{$name}}~~~~~~~~}\\
+{\textcolor{blue} {~~~~~~~~{andc}}~~~~~~~~}\\
 
 {\scriptsize  {\color{black} Participated in SciPy India Conference 2016\\
 organized by FOSSEE at Indian Institute of Technology Bombay \\
@@ -52,8 +59,8 @@ on 10, 11 December 2016.}\\}
 {\color{black!40!black}
 \scalebox{1}{
  \begin{tabular}{c c c c c}
-    \small{} & \small{} &  \small{} &   \hspace{2cm} &\small{\begin{pspicture}(0.3cm,0.3cm) \psbarcode{$link_qrcode}{eclevel=L width=0.25 height=0.25}{qrcode}\end{pspicture}} \\
-    \small{} & \small{} & \small{} & \small{} & \tiny{\color{black}\texttt{$qrcode}}
+    \small{} & \small{} &  \small{} &   \hspace{2cm} &\small{\begin{pspicture}(0.3cm,0.3cm) \psbarcode{123}{eclevel=L width=0.25 height=0.25}{qrcode}\end{pspicture}} \\
+    \small{} & \small{} & \small{} & \small{} & \tiny{\color{black}\texttt{sax}}
   \end{tabular}
 
 }}
