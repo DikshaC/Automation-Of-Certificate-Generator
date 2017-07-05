@@ -190,7 +190,10 @@ def generate_qrcode(user, organised_event):
                 uniqueness = True
 
     link_qrcode = 'www.fossee.in/account/verify/'+qrcode
-    return link_qrcode, qrcode
+    user_info = UserCertificateInfo.objects.get(user=user, organised_event=organised_event)
+    user_info.qrcode = qrcode
+    user_info.save()
+    return link_qrcode,qrcode
 
 
 def unzip_folder(certificate):
@@ -277,9 +280,11 @@ def create_certificate(latex_template, participant, path_folder, organised_event
     user_file.close()
 
     os.chdir(path_folder)
-    cmd = ['pdflatex', '-shell-escape', user_latex_file]
+
+    cmd = ['timeout', '5', 'pdflatex', '-shell-escape', user_latex_file]
     proc = subprocess.Popen(cmd)
     proc.communicate()
+
     return participant.first_name + '.pdf'
 
 

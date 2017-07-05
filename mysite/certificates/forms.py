@@ -43,7 +43,7 @@ class CertificateForm(forms.ModelForm):
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ['name', 'certificate', 'creator']
+        fields = ['name', 'certificate']
 
 
 class DateInput(forms.DateInput):
