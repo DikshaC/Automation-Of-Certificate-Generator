@@ -1,6 +1,6 @@
 # Automation-Of-Certificate-Generator - FOSSEE,IIT Bombay
 
-A Python-Django based web application made from the point of view of organisers for creating and sending certificates(pdf) to the participants of the events.The organiser can
+A Python-Django based web application made from the point of view of organisers for creating and sending certificates(pdf) to the participants of the events.The organiser can:
 
 1) Add/view Users
 2) Upload/View latex templates for certificates
